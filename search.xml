@@ -1,0 +1,489 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  <entry>
+    <title>git命令</title>
+    <url>/2022/08/16/22/</url>
+    <content><![CDATA[<h3 id="更改某次提交">更改某次提交</h3>
+<ol>
+<li>将HEAD移到需要更改的commit上,修改对应commit前<code>pick</code>为<code>edit</code>,保存并退出</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git rebase -i commit_id^</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>
+<p>修改文件</p>
+</li>
+<li>
+<p>暂存改动的文件</p>
+</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git add [改动的文件]</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>追加改动到第一步指定的commit上</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git commit --amend</span><br></pre></td></tr></table></figure>
+<ol start="5">
+<li>移动HEAD到最新commit处</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git rebase --<span class="built_in">continue</span></span><br></pre></td></tr></table></figure>
+<ol start="6">
+<li>解决冲突</li>
+<li>再次执行</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git rabase --<span class="built_in">continue</span></span><br></pre></td></tr></table></figure>
+<h3 id="本地分支落后远端分支">本地分支落后远端分支</h3>
+<p>本地分支commit与远端分支commit一致，本地分支未提交的commit移动到最后</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git rebase [&lt;upstream&gt; [&lt;branch&gt;]]</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>git</category>
+      </categories>
+      <tags>
+        <tag>git</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>halo-个人网站搭建</title>
+    <url>/2022/07/03/11/</url>
+    <content><![CDATA[<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt-get install default-jdk -y</span><br><span class="line">java -version</span><br></pre></td></tr></table></figure>
+<p>下载halo java包</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">curl -L https://github.com/halo-dev/halo/releases/download/v1.5.3/halo-1.5.3.jar --output halo.jar</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">nohup</span> java -jar halo.jar &amp;</span><br></pre></td></tr></table></figure>
+<p>默认端口8090</p>
+<p>Nginx</p>
+<h3 id="nginx安装">nginx安装</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 安装依赖</span></span><br><span class="line">sudo apt-get install libpcre3 libpcre3-dev -y</span><br><span class="line">sudo apt-get install openssl libssl-dev -y</span><br><span class="line"><span class="comment"># 下载nginx安装包</span></span><br><span class="line">wget http://nginx.org/download/nginx-1.22.0.tar.gz</span><br><span class="line"><span class="comment"># 解压</span></span><br><span class="line">tar zxvf nginx-1.22.0.tar.gz -C ./</span><br><span class="line"><span class="built_in">cd</span> nginx-1.22.0</span><br><span class="line">./configure</span><br><span class="line"><span class="comment"># 编译安装</span></span><br><span class="line">sudo make &amp;&amp; make install</span><br><span class="line"><span class="comment"># 修改配置文件</span></span><br><span class="line">sudo vim /usr/local/nginx/conf/nginx.conf</span><br><span class="line"><span class="comment"># 启动nginx服务</span></span><br><span class="line">sudo /usr/local/nginx/sbin/nginx</span><br><span class="line"><span class="comment"># 修改配置后重启nginx服务</span></span><br><span class="line">sudo /usr/local/nginx/sbin/nginx -s reload</span><br></pre></td></tr></table></figure>
+<p>server 前添加</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">upstream blog &#123;</span><br><span class="line">    server 127.0.0.1:8090;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>替换location大括号里的内容</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">proxy_pass http://blog;</span><br><span class="line">proxy_set_header HOST $host;</span><br><span class="line">proxy_set_header X-Forwarded-Proto $scheme;</span><br><span class="line">proxy_set_header X-Real-IP $remote_addr;</span><br><span class="line">proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;</span><br></pre></td></tr></table></figure>
+<h3 id="添加备案信息">添加备案信息</h3>
+<p><code>http://localhost:8090/admin</code> -&gt; 系统 -&gt; 博客设置 -&gt; 基本设置 -&gt; 页脚信息</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;a href=&quot;http://beian.miit.gov.cn/&quot;  style=&quot;color:#f72b07&quot; target=&quot;_blank&quot;&gt;京 ICP 备 2022007624 号 - 1&lt;/a&gt;</span><br></pre></td></tr></table></figure>
+]]></content>
+      <categories>
+        <category>博客搭建</category>
+      </categories>
+      <tags>
+        <tag>halo</tag>
+        <tag>网站</tag>
+        <tag>博客</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo-theme-next主题配置</title>
+    <url>/2022/07/02/41/</url>
+    <content><![CDATA[<h2 id="安装">安装</h2>
+<p><a href="https://theme-next.js.org/">next主题官网网站</a></p>
+<h3 id="下载主题">下载主题</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/next-theme/hexo-theme-next themes/next</span><br></pre></td></tr></table></figure>
+<h3 id="启用主题">启用主题</h3>
+<p>修改博客配置文件<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>,启用next主题</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">theme:</span> <span class="string">next</span></span><br></pre></td></tr></table></figure>
+<h2 id="next主题配置">next主题配置</h2>
+<h3 id="更换主题风格">更换主题风格</h3>
+<p>next提供4种主题风格，可根据个人喜好选择，修改主题配置文件<sup class="footnote-ref"><a href="#fn2" id="fnref2">[2]</a></sup></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Schemes</span></span><br><span class="line"><span class="attr">scheme:</span> <span class="string">Muse</span></span><br><span class="line"><span class="comment">#scheme: Mist</span></span><br><span class="line"><span class="comment">#scheme: Pisces</span></span><br><span class="line"><span class="comment">#scheme: Gemini</span></span><br></pre></td></tr></table></figure>
+<h3 id="开启代码块复制按钮">开启代码块复制按钮</h3>
+<p>修改主题配置文件有default，flat，mac三种代码块复制风格供选择</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Add copy button on codeblock</span></span><br><span class="line"><span class="attr">copy_button:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># Available values: default | flat | mac</span></span><br><span class="line">  <span class="attr">style:</span> <span class="string">mac</span></span><br></pre></td></tr></table></figure>
+<h3 id="开启浏览进度">开启浏览进度</h3>
+<p>修改主题配置文件</p>
+<ol>
+<li>返回顶部按钮显示百分比</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Scroll percent label in b2t button.</span></span><br><span class="line"><span class="attr">scrollpercent:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>顶部显示进度条</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">reading_progress:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h3 id="开启书签">开启书签</h3>
+<p>会保留浏览进度修改主题配置文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">bookmark:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h3 id="开启右上角github-banner">开启右上角github banner</h3>
+<p>修改主题配置文件可添加标语<code>title</code></p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">github_banner:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">permalink:</span> <span class="string">https://github.com/yourname</span></span><br><span class="line">  <span class="attr">title:</span> <span class="string">Follow</span> <span class="string">me</span> <span class="string">on</span> <span class="string">GitHub</span></span><br></pre></td></tr></table></figure>
+<h3 id="去掉底部Powered-by-Hexo-NexT">去掉底部<code>Powered by Hexo &amp; NexT</code></h3>
+<p>修改主题配置文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Powered by Hexo &amp; NexT</span></span><br><span class="line"><span class="attr">powered:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<h3 id="启用菜单">启用菜单</h3>
+<p>修改主题配置文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">menu:</span></span><br><span class="line">  <span class="attr">home:</span> <span class="string">/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-home</span></span><br><span class="line">  <span class="comment">#about: /about/ || fa fa-user</span></span><br><span class="line">  <span class="attr">tags:</span> <span class="string">/tags/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-tags</span></span><br><span class="line">  <span class="attr">categories:</span> <span class="string">/categories/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-th</span></span><br><span class="line">  <span class="attr">archives:</span> <span class="string">/archives/</span> <span class="string">||</span> <span class="string">fa</span> <span class="string">fa-archive</span></span><br><span class="line">  <span class="comment">#schedule: /schedule/ || fa fa-calendar</span></span><br><span class="line">  <span class="comment">#sitemap: /sitemap.xml || fa fa-sitemap</span></span><br><span class="line">  <span class="comment">#commonweal: /404/ || fa fa-heartbeat</span></span><br></pre></td></tr></table></figure>
+<h4 id="添加社交按钮">添加社交按钮</h4>
+<p>修改主题配置文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">social:</span></span><br><span class="line">  <span class="attr">GitHub:</span> <span class="string">https://github.com/yourname</span> <span class="string">||</span> <span class="string">fab</span> <span class="string">fa-github</span></span><br><span class="line">  <span class="comment">#E-Mail: mailto:yourname@gmail.com || fa fa-envelope</span></span><br><span class="line">  <span class="attr">Weibo:</span> <span class="string">https://weibo.com/yourname</span> <span class="string">||</span> <span class="string">fab</span> <span class="string">fa-weibo</span></span><br><span class="line">  <span class="comment">#Twitter: https://twitter.com/yourname || fab fa-twitter</span></span><br><span class="line">  <span class="comment">#FB Page: https://www.facebook.com/yourname || fab fa-facebook</span></span><br><span class="line">  <span class="comment">#StackOverflow: https://stackoverflow.com/yourname || fab fa-stack-overflow</span></span><br><span class="line">  <span class="comment">#YouTube: https://youtube.com/yourname || fab fa-youtube</span></span><br><span class="line">  <span class="comment">#Instagram: https://instagram.com/yourname || fab fa-instagram</span></span><br><span class="line">  <span class="comment">#Skype: skype:yourname?call|chat || fab fa-skype</span></span><br></pre></td></tr></table></figure>
+<p>可以添加其他社交链接,末尾图标可以从<a href="https://fontawesome.com/icons%E6%90%9C%E7%B4%A2%E6%B7%BB%E5%8A%A0">https://fontawesome.com/icons搜索添加</a>例如QQ和微信</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">QQ:</span> <span class="string">tencent://message/?uin=qq号</span> <span class="string">||</span> <span class="string">fab</span> <span class="string">fa-qq</span></span><br><span class="line"><span class="attr">WeChat:</span> <span class="string">微信号</span> <span class="string">||</span> <span class="string">fab</span> <span class="string">fa-weixin</span></span><br></pre></td></tr></table></figure>
+<p>链接也可使用图片，例如微信使用二维码图片</p>
+<ol>
+<li>先将图片<code>weixin.jpg</code>上传至<code>themes/next/source/images</code>目录下</li>
+<li>修改使用图片路径</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">WeChat:</span> <span class="string">/images/weixin.jpg</span> <span class="string">||</span> <span class="string">fab</span> <span class="string">fa-weixin</span></span><br></pre></td></tr></table></figure>
+<h3 id="开启版权功能">开启版权功能</h3>
+<p>修改主题配置文件</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">creative_commons:</span></span><br><span class="line">  <span class="comment"># Available values: by | by-nc | by-nc-nd | by-nc-sa | by-nd | by-sa | cc-zero</span></span><br><span class="line">  <span class="attr">license:</span> <span class="string">by-nc-sa</span></span><br><span class="line">  <span class="comment"># Available values: big | small</span></span><br><span class="line">  <span class="attr">size:</span> <span class="string">small</span></span><br><span class="line">  <span class="attr">sidebar:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">post:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h2 id="next主题美化">next主题美化</h2>
+<h3 id="设置头像">设置头像</h3>
+<ol>
+<li>上传头像到<code>themes/next/source/images</code>目录下</li>
+<li>修改主题配置文件文件,替换url后内容为头像路径</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Sidebar Avatar</span></span><br><span class="line"><span class="attr">avatar:</span></span><br><span class="line">  <span class="comment"># Replace the default image and set the url here.</span></span><br><span class="line">  <span class="attr">url:</span> <span class="string">/images/head_portrait.jpg</span></span><br><span class="line">  <span class="comment"># If true, the avatar will be displayed in circle.</span></span><br><span class="line">  <span class="attr">rounded:</span> <span class="literal">true</span></span><br><span class="line">  <span class="comment"># If true, the avatar will be rotated with the cursor.</span></span><br><span class="line">  <span class="attr">rotated:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h3 id="启用本地搜索">启用本地搜索</h3>
+<ol>
+<li>安装<a href="https://github.com/next-theme/hexo-generator-searchdb">hexo-generator-searchdb</a>插件</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-generator-searchdb</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>博客配置文件，添加以下内容</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">search:</span></span><br><span class="line">  <span class="attr">path:</span> <span class="string">search.xml</span></span><br><span class="line">  <span class="attr">field:</span> <span class="string">post</span></span><br><span class="line">  <span class="attr">content:</span> <span class="literal">true</span></span><br><span class="line">  <span class="attr">format:</span> <span class="string">html</span></span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>修改主题配置文件</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">local_search:</span></span><br><span class="line">  <span class="attr">enable:</span> <span class="literal">true</span></span><br></pre></td></tr></table></figure>
+<h3 id="启用文章字数统计及阅读时常功能">启用文章字数统计及阅读时常功能</h3>
+<p>安装<a href="https://github.com/next-theme/hexo-word-counter">hexo-word-counter</a>插件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install hexo-word-counter</span><br></pre></td></tr></table></figure>
+<h3 id="主题界面设置">主题界面设置</h3>
+<h4 id="添加背景图">添加背景图</h4>
+<ol>
+<li>创建配置目录,博客根目录下执行</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> -p <span class="built_in">source</span>/_data</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>
+<p>上传背景图片，如<code>background.jpg</code>到<code>themes/next/source/images</code>目录下</p>
+</li>
+<li>
+<p>_data目录下创建文件<code>styles.styl</code>，添加以下内容</p>
+</li>
+</ol>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">//全局布局美化代码</span><br><span class="line"></span><br><span class="line"><span class="selector-tag">body</span> &#123;</span><br><span class="line">    <span class="attribute">background-image</span>:<span class="built_in">url</span>(<span class="string">/images/background.jpg</span>);   <span class="comment">/* 设置页面背景图片, url后为图片路径，若路径包含中文需加上双引号 */</span></span><br><span class="line">    <span class="attribute">background-repeat</span>: no-repeat;                   <span class="comment">/* 不重复背景图片 */</span></span><br><span class="line">    <span class="attribute">background-attachment</span>: fixed;                   <span class="comment">/* 固定背景图片，不随页面滚动 */</span></span><br><span class="line">    <span class="attribute">background-position</span>: center;                    <span class="comment">/* 背景图片居中显示 */</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.post-block</span>&#123;</span><br><span class="line">        <span class="attribute">background-color</span>: <span class="built_in">rgba</span>(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, <span class="number">1</span>);    <span class="comment">/* 文章块背景色为白色 */</span></span><br><span class="line">        // <span class="attribute">margin-top</span>: <span class="number">24px</span>;                         <span class="comment">/* 顶部留出空白 */</span></span><br><span class="line">        <span class="attribute">margin-bottom</span>: <span class="number">24px</span>;                         <span class="comment">/* 底部留出空白 */</span></span><br><span class="line">        // <span class="attribute">padding</span>: <span class="number">20px</span>;                            <span class="comment">/* 文章块内部留白 */</span></span><br><span class="line">        <span class="attribute">border-radius</span>: <span class="number">30px</span> <span class="number">30px</span> <span class="number">30px</span> <span class="number">30px</span>;          <span class="comment">/* 圆角半径为 30px */</span></span><br><span class="line">        <span class="attribute">box-shadow</span>: <span class="number">8px</span> <span class="number">7px</span> <span class="number">2px</span> <span class="number">0</span> <span class="built_in">rgba</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0.12</span>),  <span class="comment">/* 添加阴影效果，第一个参数为水平偏移，第二个参数为垂直偏移，第三个参数为模糊半径，第四个参数为阴影扩散程度 */</span></span><br><span class="line">                    <span class="number">7px</span> <span class="number">4px</span> <span class="number">1px</span> -<span class="number">2px</span> <span class="built_in">rgba</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0.06</span>),</span><br><span class="line">                    <span class="number">0</span> <span class="number">1px</span> <span class="number">5px</span> <span class="number">0</span> <span class="built_in">rgba</span>(<span class="number">0</span>,<span class="number">0</span>,<span class="number">0</span>,<span class="number">0.12</span>);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="selector-class">.main-inner</span> &#123;</span><br><span class="line">    <span class="attribute">background-color</span>: <span class="built_in">rgba</span>(<span class="number">255</span>, <span class="number">255</span>, <span class="number">255</span>, <span class="number">0</span>);        <span class="comment">/* 主体区域透明背景 */</span></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ol start="4">
+<li>修改主题配置文件，去掉注释</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">style:</span> <span class="string">source/_data/styles.styl</span></span><br></pre></td></tr></table></figure>
+<h4 id="设置组件圆角">设置组件圆角</h4>
+<ol>
+<li>_data目录下创建文件<code>variables.styl</code>，添加以下内容</li>
+</ol>
+<figure class="highlight css"><table><tr><td class="code"><pre><span class="line">// 圆角设置</span><br><span class="line">$<span class="attribute">border-radius</span>-inner     = <span class="number">30px</span> <span class="number">30px</span> <span class="number">30px</span> <span class="number">30px</span>;</span><br><span class="line">$<span class="attribute">border-radius</span>           = <span class="number">30px</span>;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>修改主题配置文件，去掉注释</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">variable:</span> <span class="string">source/_data/variables.styl</span></span><br></pre></td></tr></table></figure>
+<h3 id="添加看板娘">添加看板娘</h3>
+<p>使用[ive2d-widget]<a href="https://github.com/stevenjoezhang/live2d-widget">https://github.com/stevenjoezhang/live2d-widget</a></p>
+<h4 id="最简单的">最简单的</h4>
+<ol>
+<li>_data目录下创建文件<code>head.njk</code>，添加以下内容</li>
+</ol>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">&lt;script src=&quot;https://fastly.jsdelivr.net/gh/stevenjoezhang/live2d-widget@latest/autoload.js&quot;&gt;&lt;/script&gt;</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>修改主题配置文件,去掉注释</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">head:</span> <span class="string">source/_data/head.njk</span></span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> themes/next/source/</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git <span class="built_in">clone</span> https://github.com/stevenjoezhang/live2d-widget.git</span><br></pre></td></tr></table></figure>
+<h3 id="添加valine评论系统">添加valine评论系统</h3>
+<h4 id="准备">准备</h4>
+<p>注册<a href="https://console.leancloud.cn/">leancloud</a>,创建应用</p>
+<ol>
+<li>新版hexo移除了Valine，需要自行安装</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install next-theme/hexo-next-valine</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>修改 node_modules/hexo-next-valine/default.yaml 中的配置</li>
+</ol>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>博客根目录下:_config.yml <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+<li id="fn2" class="footnote-item"><p>next主题目录下:themes/next/_config.yml <a href="#fnref2" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>主题</tag>
+        <tag>hexo next</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>hexo博客搭建</title>
+    <url>/2022/06/30/30/</url>
+    <content><![CDATA[<h2 id="环境准备">环境准备</h2>
+<h3 id="检查Nodejs是否安装">检查Nodejs是否安装</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">node -v</span><br><span class="line">npm -v</span><br></pre></td></tr></table></figure>
+<h3 id="若未安装，安装Nodejs">若未安装，安装Nodejs</h3>
+<p>安装最新长期服务版Nodejs</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Using Ubuntu</span></span><br><span class="line">curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -</span><br><span class="line">sudo apt-get install -y nodejs</span><br><span class="line"></span><br><span class="line"><span class="comment"># Using Debian, as root</span></span><br><span class="line">curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -</span><br><span class="line">apt-get install -y nodejs</span><br></pre></td></tr></table></figure>
+<h3 id="测试npm是否正常">测试npm是否正常</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install npm -g</span><br></pre></td></tr></table></figure>
+<h3 id="若报错如下无权限报错">若报错如下无权限报错</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm ERR! Error: EACCES: permission denied, <span class="built_in">mkdir</span> <span class="string">&#x27;/usr/lib/node_modules/hexo-cli&#x27;</span></span><br><span class="line">npm ERR!  [Error: EACCES: permission denied, <span class="built_in">mkdir</span> <span class="string">&#x27;/usr/lib/node_modules/hexo-cli&#x27;</span>] &#123;</span><br><span class="line">npm ERR!   errno: -13,</span><br><span class="line">npm ERR!   code: <span class="string">&#x27;EACCES&#x27;</span>,</span><br><span class="line">npm ERR!   syscall: <span class="string">&#x27;mkdir&#x27;</span>,</span><br><span class="line">npm ERR!   path: <span class="string">&#x27;/usr/lib/node_modules/hexo-cli&#x27;</span></span><br><span class="line">npm ERR! &#125;</span><br></pre></td></tr></table></figure>
+<p>官方解决方案:<a href="https://docs.npmjs.com/resolving-eacces-permissions-errors-when-installing-packages-globally">Resolving EACCES permissions errors when installing packages globally</a></p>
+<p>个人采用官方第二种方案，自定义全局安装目录，操作如下:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">mkdir</span> ~/.npm-global</span><br><span class="line">npm config <span class="built_in">set</span> prefix <span class="string">&#x27;~/.npm-global&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>添加环境变量</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">echo</span> <span class="string">&#x27;export PATH=~/.npm-global/bin:$PATH&#x27;</span> &gt;&gt; ~/.profile</span><br><span class="line"><span class="built_in">source</span> ~/.profile</span><br></pre></td></tr></table></figure>
+<h3 id="若nmp访问较慢，可更换阿里源">若nmp访问较慢，可更换阿里源</h3>
+<p>更换npm安装源</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npmmirror.com</span><br></pre></td></tr></table></figure>
+<p>若想还原官方源执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm config <span class="built_in">set</span> registry https://registry.npmjs.org</span><br></pre></td></tr></table></figure>
+<h2 id="hexo博客部署">hexo博客部署</h2>
+<h3 id="安装hexo框架">安装hexo框架</h3>
+<p>安装hexo框架</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install -g hexo-cli</span><br></pre></td></tr></table></figure>
+<p>查看hexo版本，验证安装</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo -v</span><br></pre></td></tr></table></figure>
+<h3 id="初始化博客">初始化博客</h3>
+<p>生成博客根目录blog(目录名可任意取), 并初始化</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo init blog</span><br></pre></td></tr></table></figure>
+<p>进去博客根目录，</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cd</span> blog</span><br></pre></td></tr></table></figure>
+<div class="note warning"><h3 id="注意">注意</h3>
+<p>以下操作均在博客根目录下进行</p>
+</div>
+<h3 id="hexo-基本使用">hexo 基本使用</h3>
+<p>创建新的文章，会给出文章的路径</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new <span class="string">&quot;我的第一篇文章&quot;</span></span><br></pre></td></tr></table></figure>
+<p>生成博客所需的静态文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo generate</span><br></pre></td></tr></table></figure>
+<p>清理生成的文件和缓存</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean</span><br></pre></td></tr></table></figure>
+<p>部署网站，需要有自己的网站地址，下面会有使用github仓库作为域名部署</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo deploy</span><br></pre></td></tr></table></figure>
+<p>启动博客服务，默认地址<a href="http://localhost:4000/">http://localhost:4000/</a>,可在浏览器打开，查看博客内容</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo server</span><br></pre></td></tr></table></figure>
+<p>为避免文章未写完就被发布,可以生成草稿文章</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new draft <span class="string">&quot;草稿&quot;</span></span><br></pre></td></tr></table></figure>
+<p>通过添加 <code>--draft</code> 命令来预览草稿</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo server --draft</span><br></pre></td></tr></table></figure>
+<p>写完后再发布</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo publish <span class="string">&quot;草稿&quot;</span></span><br></pre></td></tr></table></figure>
+<h3 id="启用tags与categories">启用tags与categories</h3>
+<div class="tabs" id="menu"><ul class="nav-tabs"><li class="tab active"><a href="#menu-1">启用tag</a></li><li class="tab"><a href="#menu-2">启用categories</a></li></ul><div class="tab-content"><div class="tab-pane active" id="menu-1"><p>博客根目录执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;tags&quot;</span></span><br></pre></td></tr></table></figure>
+<p>修改<code>source/tags/index.md</code>文件添加<code>type</code>和<code>layout</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: tags</span><br><span class="line">date: 2023-05-10 11:32:36</span><br><span class="line">type: tags</span><br><span class="line">layout: &quot;tags&quot;</span><br><span class="line">---</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="menu-2"><p>博客根目录执行以下命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo new page <span class="string">&quot;categories&quot;</span></span><br></pre></td></tr></table></figure>
+<p>修改<code>source/categories/index.md</code>文件添加<code>type</code>和<code>layout</code></p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: categories</span><br><span class="line">date: 2023-05-10 11:32:36</span><br><span class="line">type: categories</span><br><span class="line">layout: &quot;categories&quot;</span><br><span class="line">---</span><br></pre></td></tr></table></figure></div></div></div>
+<h3 id="修改默认模板">修改默认模板</h3>
+<p>草稿文章模板文件: scaffolds/draft.md 修改为</p>
+<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">categories:</span><br><span class="line"><span class="section">description:</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+<p>正式文章模板文件: scaffolds/post.md 修改为</p>
+<figure class="highlight md"><table><tr><td class="code"><pre><span class="line">---</span><br><span class="line">title: &#123;&#123; title &#125;&#125;</span><br><span class="line">date: &#123;&#123; date &#125;&#125;</span><br><span class="line">tags:</span><br><span class="line">categories:</span><br><span class="line"><span class="section">description:</span></span><br><span class="line"><span class="section">---</span></span><br></pre></td></tr></table></figure>
+<h3 id="使用github仓库部署博客">使用github仓库部署博客</h3>
+<h4 id="检查git是否安装">检查git是否安装</h4>
+<p>检查git版本，验证是否安装git</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git --version</span><br></pre></td></tr></table></figure>
+<p>若未安装，先安装git</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">sudo apt install git</span><br></pre></td></tr></table></figure>
+<h4 id="配置免密登录">配置免密登录</h4>
+<p>具体操作请参考<a href="https://fengfuyuyang.github.io/2022/06/29/%E5%85%8D%E5%AF%86%E8%AE%BF%E9%97%AE/">免密访问</a></p>
+<h4 id="创建仓库">创建仓库</h4>
+<ol>
+<li>依次点击: ☞ <code>右上角＋</code> ☞ <code>New reposiitory</code></li>
+<li>Repository name 填写必须为: <a href="http://xn--github-8h6jg76drzion3cmedi80c.github.io">自己github的用户名.github.io</a><br>
+例如: <a href="http://fengfuyuyang.github.io">fengfuyuyang.github.io</a></li>
+<li>点击<code>Create repository</code>, 复制仓库地址例如: <a href="mailto:git@github.com">git@github.com</a>:fengfuyuyang/fengfuyuyang.github.io.git</li>
+</ol>
+<h4 id="配置-config-yml">配置_config.yml</h4>
+<p>修改前</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">&#x27;&#x27;</span></span><br></pre></td></tr></table></figure>
+<p>添加github仓库地址，修改后内容如下</p>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Deployment</span></span><br><span class="line"><span class="comment">## Docs: https://hexo.io/docs/one-command-deployment</span></span><br><span class="line"><span class="attr">deploy:</span></span><br><span class="line">  <span class="attr">type:</span> <span class="string">git</span></span><br><span class="line">  <span class="attr">repo:</span> <span class="string">git@github.com:fengfuyuyang/fengfuyuyang.github.io.git</span></span><br><span class="line">  <span class="attr">branch:</span> <span class="string">master</span></span><br></pre></td></tr></table></figure>
+<h4 id="安装git插件和hexo使用">安装git插件和hexo使用</h4>
+<p>安装插件, 注意插件只对当前博客目录生效，若另外又建了新的blog，需要重新安装插件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install --save hexo-deployer-git</span><br></pre></td></tr></table></figure>
+<p>部署到git</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">hexo clean &amp;&amp; hexo g &amp;&amp; hexo d</span><br></pre></td></tr></table></figure>
+<p>打开浏览器，输入网址<a href="https://fengfuyuyang.github.io">https://fengfuyuyang.github.io</a>，即之前创建的仓库名，就可以访问自己的博客了</p>
+<p>hexo有很多主题供选择,博主使用的是<a href="https://theme-next.js.org/">next主题</a>,可参考<a href="https://fengfuyuyang.github.io/2022/07/02/hexo-theme-next%E4%B8%BB%E9%A2%98%E9%85%8D%E7%BD%AE/#more">hexo-theme-next主题配置</a>进行设置</p>
+<h3 id="更换更好的markdown渲染器">更换更好的markdown渲染器</h3>
+<ol>
+<li>卸载hexo 默认渲染器</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm un hexo-renderer-marked --save</span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>安装<a href="https://github.com/hexojs/hexo-renderer-markdown-it">hexo-renderer-markdown-it</a></li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm i hexo-renderer-markdown-it --save</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>博客配置文件添加以下内容</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">markdown:</span></span><br><span class="line">  <span class="attr">preset:</span> <span class="string">&#x27;default&#x27;</span></span><br><span class="line">  <span class="attr">render:</span></span><br><span class="line">    <span class="attr">html:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">xhtmlOut:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">langPrefix:</span> <span class="string">&#x27;language-&#x27;</span></span><br><span class="line">    <span class="attr">breaks:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">linkify:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">typographer:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">quotes:</span> <span class="string">&#x27;“”‘’&#x27;</span></span><br><span class="line">  <span class="attr">enable_rules:</span></span><br><span class="line">  <span class="attr">disable_rules:</span></span><br><span class="line">  <span class="attr">plugins:</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-abbr</span></span><br><span class="line">    <span class="comment"># - markdown-it-attrs</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-cjk-breaks</span></span><br><span class="line">    <span class="comment"># - markdown-it-container</span></span><br><span class="line">    <span class="comment"># - markdown-it-deflist</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-emoji</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-footnote</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-ins</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-mark</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-sub</span></span><br><span class="line">    <span class="bullet">-</span> <span class="string">markdown-it-sup</span></span><br><span class="line">  <span class="attr">anchors:</span></span><br><span class="line">    <span class="attr">level:</span> <span class="number">2</span></span><br><span class="line">    <span class="attr">collisionSuffix:</span> <span class="string">&#x27;&#x27;</span></span><br><span class="line">    <span class="attr">permalink:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">permalinkClass:</span> <span class="string">&#x27;header-anchor&#x27;</span></span><br><span class="line">    <span class="attr">permalinkSide:</span> <span class="string">&#x27;left&#x27;</span></span><br><span class="line">    <span class="attr">permalinkSymbol:</span> <span class="string">&#x27;¶&#x27;</span></span><br><span class="line">    <span class="attr">case:</span> <span class="number">0</span></span><br><span class="line">    <span class="attr">separator:</span> <span class="string">&#x27;-&#x27;</span></span><br><span class="line">  <span class="attr">images:</span></span><br><span class="line">    <span class="attr">lazyload:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">prepend_root:</span> <span class="literal">false</span></span><br><span class="line">    <span class="attr">post_asset:</span> <span class="literal">false</span></span><br></pre></td></tr></table></figure>
+<p>hexo-renderer-markdown-it自带一些插件,可根据自身需求选择启用哪些插件以下是每个插件的作用和使用示例代码：</p>
+<table>
+<thead>
+<tr>
+<th>插件名称</th>
+<th>插件作用</th>
+<th>使用语法</th>
+<th>效果</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>markdown-it-abbr</td>
+<td>用于解析缩写</td>
+<td><code>*[HTML]: 超文本标记语言.</code></td>
+<td><abbr title="超文本标记语言.">HTML</abbr></td>
+</tr>
+<tr>
+<td>markdown-it-attrs</td>
+<td>用于添加标签属性</td>
+<td><code>&#123;.class #id data-x=hello&#125;</code></td>
+<td></td>
+</tr>
+<tr>
+<td>markdown-it-cjk-breaks</td>
+<td>中英文之间自动插入空格</td>
+<td>无需语法，直接安装插件即可</td>
+<td></td>
+</tr>
+<tr>
+<td>markdown-it-container</td>
+<td>定义自定义块级容器</td>
+<td><code>::: note&lt;br /&gt;this is a note&lt;br /&gt;:::</code></td>
+<td></td>
+</tr>
+<tr>
+<td>markdown-it-deflist</td>
+<td>定义自定义列表</td>
+<td><code>Term 1</code><br><code>: Definition 1</code><br><code>Term 2</code><br><code>: Definition 2a</code><br><code>: Definition 2b</code></td>
+<td></td>
+</tr>
+<tr>
+<td>markdown-it-emoji</td>
+<td>将emoji代码转化为真实的emoji表情符号</td>
+<td><code>:smile:</code></td>
+<td>😄</td>
+</tr>
+<tr>
+<td>markdown-it-footnote</td>
+<td>定义脚注</td>
+<td><code>这是一个带有脚注的句子[^1]。</code><br> <code>[^1]: 脚注内容</code></td>
+<td>这是一个带有脚注的句子<sup class="footnote-ref"><a href="#fn1" id="fnref1">[1]</a></sup>。</td>
+</tr>
+<tr>
+<td>markdown-it-ins</td>
+<td>定义下划线</td>
+<td><code>++加入的文本++</code></td>
+<td><ins>加入的文本</ins></td>
+</tr>
+<tr>
+<td>markdown-it-mark</td>
+<td>定义高亮</td>
+<td><code>==突出显示的文本==</code></td>
+<td><mark>突出显示的文本</mark></td>
+</tr>
+<tr>
+<td>markdown-it-sub</td>
+<td>定义下标</td>
+<td><code>H~2~O</code></td>
+<td>H<sub>2</sub>O</td>
+</tr>
+<tr>
+<td>markdown-it-sup</td>
+<td>定义上标</td>
+<td><code>2^10^</code></td>
+<td>2<sup>10</sup></td>
+</tr>
+</tbody>
+</table>
+<h3 id="使用4everland部署">使用4everland部署</h3>
+<p>国内 github pages 访问很慢，可使用 4everland 部署 hexo 加速访问</p>
+<ol>
+<li>浏览器访问<a href="https://dashboard.4everland.org?invite=91API3WK">4everland</a>,无需注册,点击<code>Continue with GitHub</code>使用github登录</li>
+<li>点击左上角<code>Hosting</code> -&gt; <code>Projects</code> -&gt; <code>New Project</code></li>
+<li>赋权访问github仓库,</li>
+<li>选择hexo的存储库,点击该存储库旁的<code>Import</code></li>
+<li>选择<code>Hosting Platform</code>为IPFS</li>
+<li>修改<code>Basic Configuration</code>下<code>Project Name</code>(可任意起名,会是部署后的网址中的一部分)</li>
+<li>修改<code>Build Configuration</code>下<code>Framework Preset</code>为Other</li>
+<li>点击底部<code>Deploy</code>按钮,等待部署完成</li>
+<li>访问博客,地址为https://&lt;设置的ProjectName&gt;.4everland.app</li>
+</ol>
+<hr class="footnotes-sep">
+<section class="footnotes">
+<ol class="footnotes-list">
+<li id="fn1" class="footnote-item"><p>脚注内容 <a href="#fnref1" class="footnote-backref">↩︎</a></p>
+</li>
+</ol>
+</section>
+]]></content>
+      <categories>
+        <category>博客搭建</category>
+        <category>hexo</category>
+      </categories>
+      <tags>
+        <tag>博客</tag>
+        <tag>hexo</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>免密访问</title>
+    <url>/2022/06/29/16/</url>
+    <content><![CDATA[<h3 id="本地服务器操作">本地服务器操作</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 进入用户根目录</span></span><br><span class="line">$ <span class="built_in">cd</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># 检查是否已有文件id_rsa.pub</span></span><br><span class="line">$ <span class="built_in">ls</span> -l .ssh</span><br><span class="line"></span><br><span class="line"><span class="comment"># 若没有, 执行命令, 生成密钥, 该过程所有提示选项均直接按回车键即可</span></span><br><span class="line">$ ssh-keygen</span><br><span class="line"></span><br><span class="line"><span class="comment"># 获取公钥内容, 并复制</span></span><br><span class="line">$ <span class="built_in">cat</span> .ssh/id_rsa.pub</span><br></pre></td></tr></table></figure>
+<div class="tabs" id="免密"><ul class="nav-tabs"><li class="tab active"><a href="#免密-1">github免密</a></li><li class="tab"><a href="#免密-2">Windows下VSCode免密远程连接服务器</a></li></ul><div class="tab-content"><div class="tab-pane active" id="免密-1"><h4 id="在本地服务器上">在本地服务器上</h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 配置git使用的用户</span></span><br><span class="line">$ git config --global user.name [username]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 配置git使用的email</span></span><br><span class="line">$ git config --global user.email [email]</span><br></pre></td></tr></table></figure>
+<h4 id="github网站上">github网站上</h4>
+<ol>
+<li>登录账号</li>
+<li>依次点击: ☞ 头像 ☞ <code>Settings</code> ☞ <code>SSH and GPG keys</code> ☞ <code>New SSH key</code></li>
+<li>粘贴之前复制的公钥到 Key 选框中, 再点击 <code>Add SSH key</code></li>
+</ol></div><div class="tab-pane" id="免密-2"><h4 id="Windows下操作">Windows下操作</h4>
+<p><code>Win</code> + <code>R</code> 键，输入<code>PowerShell</code>打开Window终端，输入下面命令生成密钥，三次询问均直接回车</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">ssh-keygen -t rsa -b 4096</span><br></pre></td></tr></table></figure>
+<p>上传公钥到远端</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scp .\.ssh\id_rsa.pub 远端用户名@远端IP:~/</span><br></pre></td></tr></table></figure>
+<div class="note warning"><h4 id="警告">警告</h4>
+<p>若仍需输入密码,需修改用户目录权限不低于755(即数值不大于755)</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chomd 755 /home/[usr_name]</span><br></pre></td></tr></table></figure></div>
+<h4 id="登录远端服务器操作">登录远端服务器操作</h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> ~/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"><span class="built_in">chmod</span> 600 ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure></div></div></div>
+<h3 id="配置多个ssh公钥">配置多个ssh公钥</h3>
+<p>一个ssh公钥只能用于一个github账户,因此需要配置多个SSH公钥以便使用不同的GitHub账户</p>
+<h4 id="生成新的SSH密钥">生成新的SSH密钥</h4>
+<p>使用命令<code>ssh-keygen</code>来生成新的SSH密钥对。当提示输入文件名时，应该为新密钥对<strong>指定一个唯一的名称</strong>，例如: <code>~/.ssh/id_rsa_github_personal</code> 或 <code>~/.ssh/id_rsa_github_work</code>,其他提示直接回车即可</p>
+<div class="note warning"><h4 id="注意">注意</h4>
+<p>文件名应使用绝对路径,否则秘钥会生成在当前目录下</p>
+</div>
+<div class="tabs" id="config"><ul class="nav-tabs"><li class="tab"><a href="#config-1">定义账户别名区分</a></li><li class="tab active"><a href="#config-2">使用SSH代理自动识别</a></li></ul><div class="tab-content"><div class="tab-pane" id="config-1"><p>在 ~/.ssh/ 目录下创建或编辑 config 文件,添加以下内容为每个GitHub帐户定义了一个别名,通过别名来选择要使用的SSH密钥文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Personal GitHub account</span></span><br><span class="line">Host github.com-personal</span><br><span class="line">  HostName github.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_github_personal</span><br><span class="line"></span><br><span class="line"><span class="comment"># Work GitHub account</span></span><br><span class="line">Host github.com-work</span><br><span class="line">  HostName github.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_github_work</span><br></pre></td></tr></table></figure>
+<div class="note warning"><h4 id="注意">注意</h4>
+<p>在使用Git时，需要将远程URL更改为之前定义的别名（例如 git@github.com-personal:username/repo.git）</p>
+</div></div><div class="tab-pane active" id="config-2"><p>向 ~/.bashrc 文件中添加以下内容</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 启动 SSH 代理（如果尚未启动）</span><br><span class="line">if [ -z &quot;$SSH_AUTH_SOCK&quot; ] ; then</span><br><span class="line">  eval &quot;$(ssh-agent -s)&quot; &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">  ssh-add ~/.ssh/id_rsa_github_personal &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">  ssh-add ~/.ssh/id_rsa_github_work &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">  # 添加其他密钥，如果需要的话</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></div></div></div>
+<div class="note warning"><h4 id="注意">注意</h4>
+<p>若配置了全局git配置，则会使用全局配置的git用户进行提交，若与实际仓库git用户不匹配会无法正常提交代码所以最好在本地每个仓库下都要配置对应 git 登录邮箱和用户名</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --<span class="built_in">local</span> user.email &lt;邮箱&gt;</span><br><span class="line">git config --<span class="built_in">local</span> user.name &lt;用户名&gt;</span><br></pre></td></tr></table></figure>
+</div>
+]]></content>
+      <categories>
+        <category>ssh</category>
+      </categories>
+      <tags>
+        <tag>免密</tag>
+        <tag>ssh</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>编译与链接</title>
+    <url>/2022/11/11/26/</url>
+    <content><![CDATA[<h3 id="添加动态库地址">添加动态库地址</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">export</span> LD_LIBRARY_PATH=<span class="variable">$LD_LIBRARY_PATH</span>:[lib_dir]</span><br></pre></td></tr></table></figure>
+<h4 id="使用-Wl-rpath-lib-dir-指定动态库目录">使用 -Wl,-rpath=[lib_dir] 指定动态库目录</h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">g++ -g -Wall -pthread s3_test.cpp libs3/build/lib/libs3.so.4 -Wl,-rpath=libs3/build/lib -o main</span><br></pre></td></tr></table></figure>]]></content>
+  </entry>
+</search>
