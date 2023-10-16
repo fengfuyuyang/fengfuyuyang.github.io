@@ -400,6 +400,9 @@
 </tr>
 </tbody>
 </table>
+<h3 id="添加-valine-评价系统">添加 valine 评价系统</h3>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">npm install next-theme/hexo-next-valine</span><br></pre></td></tr></table></figure>
+<p>修改 node_modules/hexo-next-valine/default.yaml</p>
 <h3 id="使用4everland部署">使用4everland部署</h3>
 <p>国内 github pages 访问很慢，可使用 4everland 部署 hexo 加速访问</p>
 <ol>
@@ -449,26 +452,26 @@
 <figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">scp .\.ssh\id_rsa.pub 远端用户名@远端IP:~/</span><br></pre></td></tr></table></figure>
 <div class="note warning"><h4 id="警告">警告</h4>
 <p>若仍需输入密码,需修改用户目录权限不低于755(即数值不大于755)</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">chomd 755 /home/[usr_name]</span><br></pre></td></tr></table></figure></div>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">chmod</span> 755 /home/[usr_name]</span><br></pre></td></tr></table></figure></div>
 <h4 id="登录远端服务器操作">登录远端服务器操作</h4>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="built_in">cat</span> ~/id_rsa.pub &gt;&gt; ~/.ssh/authorized_keys</span><br><span class="line"><span class="built_in">chmod</span> 600 ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure></div></div></div>
 <h3 id="配置多个ssh公钥">配置多个ssh公钥</h3>
 <p>一个ssh公钥只能用于一个github账户,因此需要配置多个SSH公钥以便使用不同的GitHub账户</p>
 <h4 id="生成新的SSH密钥">生成新的SSH密钥</h4>
-<p>使用命令<code>ssh-keygen</code>来生成新的SSH密钥对。当提示输入文件名时，应该为新密钥对<strong>指定一个唯一的名称</strong>，例如: <code>~/.ssh/id_rsa_github_personal</code> 或 <code>~/.ssh/id_rsa_github_work</code>,其他提示直接回车即可</p>
+<p>使用命令<code>ssh-keygen</code>来生成新的SSH密钥对。当提示输入文件名时，应该为新密钥对指定一个<mark>唯一</mark>的名称，例如: <code>~/.ssh/id_rsa_github_personal</code> 或 <code>~/.ssh/id_rsa_github_work</code>,其他提示直接回车即可</p>
 <div class="note warning"><h4 id="注意">注意</h4>
 <p>文件名应使用绝对路径,否则秘钥会生成在当前目录下</p>
 </div>
-<div class="tabs" id="config"><ul class="nav-tabs"><li class="tab"><a href="#config-1">定义账户别名区分</a></li><li class="tab active"><a href="#config-2">使用SSH代理自动识别</a></li></ul><div class="tab-content"><div class="tab-pane" id="config-1"><p>在 ~/.ssh/ 目录下创建或编辑 config 文件,添加以下内容为每个GitHub帐户定义了一个别名,通过别名来选择要使用的SSH密钥文件</p>
+<h4 id="为每个git仓库配置用户信息">为每个git仓库配置用户信息</h4>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config user.name <span class="string">&quot;Your Name&quot;</span></span><br><span class="line">git config user.email <span class="string">&quot;your@email.com&quot;</span></span><br></pre></td></tr></table></figure>
+<div class="tabs" id="config"><ul class="nav-tabs"><li class="tab active"><a href="#config-1">方法一</a></li><li class="tab"><a href="#config-2">方法二</a></li></ul><div class="tab-content"><div class="tab-pane active" id="config-1"><p>为每个Git仓库配置不同的SSH密钥</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config core.sshCommand <span class="string">&quot;ssh -i ~/.ssh/id_rsa_github_personal&quot;</span></span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="config-2"><p>在 ~/.ssh/ 目录下创建或编辑 config 文件,添加以下内容为每个GitHub帐户定义了一个别名,通过别名来选择要使用的SSH密钥文件</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Personal GitHub account</span></span><br><span class="line">Host github.com-personal</span><br><span class="line">  HostName github.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_github_personal</span><br><span class="line"></span><br><span class="line"><span class="comment"># Work GitHub account</span></span><br><span class="line">Host github.com-work</span><br><span class="line">  HostName github.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_github_work</span><br></pre></td></tr></table></figure>
 <div class="note warning"><h4 id="注意">注意</h4>
-<p>在使用Git时，需要将远程URL更改为之前定义的别名（例如 git@github.com-personal:username/repo.git）</p>
-</div></div><div class="tab-pane active" id="config-2"><p>向 ~/.bashrc 文件中添加以下内容</p>
-<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line"># 启动 SSH 代理（如果尚未启动）</span><br><span class="line">if [ -z &quot;$SSH_AUTH_SOCK&quot; ] ; then</span><br><span class="line">  eval &quot;$(ssh-agent -s)&quot; &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">  ssh-add ~/.ssh/id_rsa_github_personal &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">  ssh-add ~/.ssh/id_rsa_github_work &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">  # 添加其他密钥，如果需要的话</span><br><span class="line">fi</span><br></pre></td></tr></table></figure></div></div></div>
-<div class="note warning"><h4 id="注意">注意</h4>
-<p>若配置了全局git配置，则会使用全局配置的git用户进行提交，若与实际仓库git用户不匹配会无法正常提交代码所以最好在本地每个仓库下都要配置对应 git 登录邮箱和用户名</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config --<span class="built_in">local</span> user.email &lt;邮箱&gt;</span><br><span class="line">git config --<span class="built_in">local</span> user.name &lt;用户名&gt;</span><br></pre></td></tr></table></figure>
-</div>
+<p>在使用Git时，需要将远程URL更改为之前定义的别名例如: <code>git@github.com:yourusername/your-repo.git</code> 需要修改为 <code>git@github.com-personal:yourusername/your-repo.git</code></p>
+<p>本地git仓库目录下执行命令</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote set-url origin git@github.com-personal:yourusername/your-repo.git</span><br></pre></td></tr></table></figure>
+</div></div></div></div>
 ]]></content>
       <categories>
         <category>ssh</category>
