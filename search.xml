@@ -482,6 +482,36 @@
       </tags>
   </entry>
   <entry>
+    <title>内网穿透</title>
+    <url>/2023/10/10/24/</url>
+    <content><![CDATA[<ol>
+<li>
+<p>登录注册<a href="https://www.natfrp.com/">SakuraFrp</a></p>
+</li>
+<li>
+<p>下载软件</p>
+</li>
+</ol>
+<p><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/%E8%BD%AF%E4%BB%B6%E4%B8%8B%E8%BD%BD.png" alt=""><br>
+<img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/%E4%B8%8B%E8%BD%BDfrcp.png" alt=""></p>
+<ol start="3">
+<li>创建隧道
+<ol>
+<li><a href="https://www.natfrp.com/tunnel/">打开隧道列表</a></li>
+<li>点击创建隧道<img src="image.png" alt=""></li>
+<li>选择普通节点(内地)</li>
+<li><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/image-1.png" alt=""></li>
+<li><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/image-2.png" alt=""></li>
+<li><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/image-3.png" alt=""></li>
+<li><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/image-4.png" alt=""></li>
+<li><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/image-5.png" alt=""></li>
+<li><img src="/images/%E5%86%85%E7%BD%91%E7%A9%BF%E9%80%8F/image-6.png" alt=""></li>
+</ol>
+</li>
+</ol>
+]]></content>
+  </entry>
+  <entry>
     <title>编译与链接</title>
     <url>/2022/11/11/26/</url>
     <content><![CDATA[<h3 id="添加动态库地址">添加动态库地址</h3>
