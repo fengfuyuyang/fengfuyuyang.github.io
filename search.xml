@@ -4408,4 +4408,99 @@ C:\Users\CirroData\xcloud\DBConfig.xml</p>
         <tag>SQL</tag>
       </tags>
   </entry>
+  <entry>
+    <title>doris开发环境搭建+vscode+开发容器+debug</title>
+    <url>/2024/03/11/40/</url>
+    <content><![CDATA[<p>Doris 官方提供了现成的 Docker <a href="https://doris.apache.org/zh-CN/docs/install/source-install/compilation-general#%E4%BD%BF%E7%94%A8%E7%8E%B0%E6%88%90%E7%9A%84%E9%95%9C%E5%83%8F">开发镜像</a>，仅用于编译代码是完全足够了，但直接用于阅读代码，debug调试，还是有所欠缺，本文将基于官方开发镜像打造极为舒适的 doris 开发环境</p>
+<h3 id="环境要求">环境要求</h3>
+<p>远程 Linux 服务器安装 docker 并启动 docker 服务</p>
+<h3 id="安装-vscode-扩展插件">安装 vscode 扩展插件</h3>
+<p>根据需要在远程 Linux 服务器中安装扩展插件</p>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/mod.png" alt=""></p>
+<p>be 端(以C++代码为主), 必装插件如下：</p>
+<ul>
+<li><code>clangd</code> (阅读C++代码, 需要glibc版本 &gt;= 2.18)</li>
+<li><code>CMake</code> 与 <code>CMake Tools</code></li>
+<li><code>CodeLLDB</code> (debug调试be)</li>
+<li><code>Language Support for Java(TM) by Red Hat</code> (阅读java部分的代码)</li>
+<li><code>Git Graph</code> 与 <code>GitLens — Git supercharged</code> (git管理，需要git版本 &gt;= 2.7.2)</li>
+<li><code>Docker</code> (方便在远程 Linux 服务器上管理与使用 docker)</li>
+</ul>
+<div class="note warning"><p>若登录远程 Linux 服务器的角色为普通用户，需要先使用以下命令授予该用户 docker 权限, 并重新连接</p>
+<figure class="highlight shell"><table><tr><td class="code"><pre><span class="line">sudo usermod -aG docker username</span><br></pre></td></tr></table></figure>
+<p>vscode 需要执行下图命令进行重连，否则不会生效<br>
+<img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/kill_current_vscode_server.png" alt=""></p>
+</div>
+<h3 id="启动容器">启动容器</h3>
+<ol>
+<li>创建 docker-compose.yml 文件，复下面的代码，根据实际情况修改 volumes 中的路径</li>
+</ol>
+<figure class="highlight yml"><table><tr><td class="code"><pre><span class="line"><span class="attr">version:</span> <span class="string">&#x27;3.4&#x27;</span></span><br><span class="line"></span><br><span class="line"><span class="attr">services:</span></span><br><span class="line">  <span class="attr">doris:</span></span><br><span class="line">    <span class="attr">container_name:</span> <span class="string">my-doris-build-env</span></span><br><span class="line">    <span class="attr">image:</span> <span class="string">apache/doris:build-env-ldb-toolchain-latest</span></span><br><span class="line">    <span class="attr">network_mode:</span> <span class="string">&quot;host&quot;</span></span><br><span class="line">    <span class="attr">cap_add:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">SYS_PTRACE</span></span><br><span class="line">    <span class="attr">security_opt:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">seccomp:unconfined</span></span><br><span class="line">    <span class="attr">privileged:</span> <span class="literal">true</span></span><br><span class="line">    <span class="attr">environment:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">TZ=Asia/Shanghai</span></span><br><span class="line">    <span class="attr">volumes:</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/home/doris/.ssh:/root/.ssh</span>                     <span class="comment"># 映射SSH密钥</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/home/doris/.vscode-server:/root/.vscode-server</span> <span class="comment"># 映射VSCode服务器设置</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/home/doris/doris:/root/doris</span>                   <span class="comment"># 映射Doris源码</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/home/doris/.m2:/root/.m2</span>                       <span class="comment"># 映射Maven仓库</span></span><br><span class="line">      <span class="bullet">-</span> <span class="string">/etc/localtime:/etc/localtime:ro</span>                <span class="comment"># 映射主机的时区设置</span></span><br><span class="line">    <span class="comment"># 在容器启动时执行一系列命令:</span></span><br><span class="line">    <span class="comment"># 编译安装glibc-2.18, git-2.36.6, bash-completion, 并清理临时文件与缓存</span></span><br><span class="line">    <span class="comment"># tail -f /dev/null 保持容器后台运行</span></span><br><span class="line">    <span class="attr">command:</span> <span class="string">/bin/bash</span> <span class="string">-c</span> <span class="string">&quot;\</span></span><br><span class="line"><span class="string">      cd /root &amp;&amp; \</span></span><br><span class="line"><span class="string">      wget --no-check-certificate https://ftp.gnu.org/gnu/glibc/glibc-2.18.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="string">      tar xvfz glibc-2.18.tar.gz &amp;&amp; \</span></span><br><span class="line"><span class="string">      mkdir -p glibc-2.18/build &amp;&amp; \</span></span><br><span class="line"><span class="string">      cd glibc-2.18/build &amp;&amp; \</span></span><br><span class="line"><span class="string">      export CC=/usr/bin/gcc &amp;&amp; \</span></span><br><span class="line"><span class="string">      ../configure --prefix=/usr --disable-profile --enable-add-ons --with-headers=/usr/include --with-binutils=/usr/bin &amp;&amp; \</span></span><br><span class="line"><span class="string">      make -j5 &amp;&amp; \</span></span><br><span class="line"><span class="string">      make install &amp;&amp; \</span></span><br><span class="line"><span class="string">      yum install -y https://repo.ius.io/ius-release-el7.rpm https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm &amp;&amp; \</span></span><br><span class="line"><span class="string">      yum remove git -y &amp;&amp; \</span></span><br><span class="line"><span class="string">      yum install -y git236 bash-completion &amp;&amp; \</span></span><br><span class="line"><span class="string">      yum clean all &amp;&amp; \</span></span><br><span class="line"><span class="string">      rm -rf /root/glibc-2.18* /var/cache/yum &amp;&amp; \</span></span><br><span class="line"><span class="string">      tail -f /dev/null&quot;</span></span><br></pre></td></tr></table></figure>
+<ol start="2">
+<li>启动容器</li>
+</ol>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/compose-up.png" alt=""></p>
+<ol start="3">
+<li>连接开发容器</li>
+</ol>
+<p>点左侧远程资源管理器，选择开发容器，然后登录到容器中，选择 <code>在当前文件中附加</code> 或 <code>在新窗口中附件</code> 都可</p>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/container.png" alt=""></p>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/vscode-connect-containers.png" alt=""></p>
+<div class="note info"><p>若无开发容器选项，则需要先安装 <code>Dev Containers</code> 扩展插件<br>
+<img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/dev-containers.png" alt=""></p>
+</div>
+<p>在vscode 左下角可以看到连接到的容器</p>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/connect-container.png" alt=""></p>
+<p>进入容器中，可以下使用以下命令检查 glibc-2.18 和 git 是否安装完毕</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">getconf GNU_LIBC_VERSION</span><br><span class="line">git --version</span><br></pre></td></tr></table></figure>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/check.png" alt=""></p>
+<p>若如上图显示，glibc-2.18 和 git 则已安装完毕</p>
+<ol start="4">
+<li>保存容器为新镜像</li>
+</ol>
+<p>若担心容器被意外删除，可以在远程 Linux 服务器上将现有容器保存为新镜像，下次直接使用新镜像启动容器即可，无需重新安装 glibc-2.18 和 git</p>
+<p>基本语法如下:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker commit [OPTIONS] CONTAINER [REPOSITORY[:TAG]]</span><br></pre></td></tr></table></figure>
+<p>例如:</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">docker commit my-doris-build-env doris:vscode-build-env</span><br></pre></td></tr></table></figure>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/vscode_build_env.png" alt=""></p>
+<h3 id="配置-settings-json">配置 settings.json</h3>
+<p>修改 settings.json 文件，添加以下内容，没有则在工作目录下手动创建  .vscode/settings.json</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;clangd.arguments&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="comment">// compile_commands.json 文件所在目录，需要先编译代码，才会生成该文件,根据实际情况调整</span></span><br><span class="line">        <span class="string">&quot;--compile-commands-dir=$&#123;workspaceFolder&#125;/be/build_Debug&quot;</span></span><br><span class="line">    <span class="punctuation">]</span><span class="punctuation">,</span></span><br><span class="line">    <span class="comment">// 使用原生表达式(debug)</span></span><br><span class="line">    <span class="attr">&quot;lldb.launch.expressions&quot;</span><span class="punctuation">:</span> <span class="string">&quot;native&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="comment">// java 插件很吃内存，根据实际情况调整，若太小插件会报错但可以忽视</span></span><br><span class="line">    <span class="attr">&quot;java.jdt.ls.vmargs&quot;</span><span class="punctuation">:</span> <span class="string">&quot;-XX:+UseParallelGC -XX:GCTimeRatio=4 -XX:AdaptiveSizePolicyWeight=90 -Dsun.zip.disableMemoryMapping=true -Xmx12G -Xms12G&quot;</span><span class="punctuation">,</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/settings.png" alt=""></p>
+<h3 id="debug">debug</h3>
+<ol>
+<li>编译debug版</li>
+</ol>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">BUILD_TYPE=Debug sh build.sh --fe --be</span><br></pre></td></tr></table></figure>
+<div class="note info"><p><code>Debug</code> 大小写不同，会导致 build 目录名不同<br>
+<code>BUILD_TYPE=Debug</code> 生成的目录为 <code>build_Debug</code><br>
+<code>BUILD_TYPE=debug</code> 生成的目录为 <code>build_debug</code></p>
+</div>
+<ol start="2">
+<li>修改 be fe 配置</li>
+</ol>
+<p>根据实际情况，修改配置，其中 fe.conf 需要添加配置</p>
+<p>目的：避免因为gdb调试中因超过心跳时间限制导致超时，进而SQL执行报错而终止</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">bdbje_heartbeat_timeout_second = 600</span><br><span class="line">remote_fragment_exec_timeout_ms = 600000</span><br><span class="line">max_backend_heartbeat_failure_tolerance_count = 100</span><br></pre></td></tr></table></figure>
+<ol start="3">
+<li>配置launch.json</li>
+</ol>
+<p>添加以下内容</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;lldb&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="comment">// 使用附加的方式</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;attach&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Debug&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="comment">// be可执行程序路径, 根据实际情况修改</span></span><br><span class="line">            <span class="attr">&quot;program&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;workspaceFolder&#125;/output/be/lib/doris_be&quot;</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<p>若没有，可以手动在 .vscode 目录下创建 launch.json</p>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/launch.png" alt=""></p>
+<ol start="4">
+<li>启动be 与 fe，debug be</li>
+</ol>
+<p><img src="/images/doris%E5%BC%80%E5%8F%91%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA+vscode+%E5%BC%80%E5%8F%91%E5%AE%B9%E5%99%A8+debug/debug.png" alt=""></p>
+]]></content>
+      <categories>
+        <category>doris</category>
+      </categories>
+      <tags>
+        <tag>docker</tag>
+        <tag>容器</tag>
+      </tags>
+  </entry>
 </search>
