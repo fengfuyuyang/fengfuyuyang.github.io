@@ -3915,7 +3915,7 @@
 <li>若无堆栈,找到报错信息所在线程,查看该线程的日志,查找报错(注意有的日志不带error等错关键字需要自行甄别)</li>
 </ol>
 <h2 id="打印所有线程堆栈到thread-info-txt文件">打印所有线程堆栈到<code>thread_info.txt</code>文件</h2>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gdb -q --batch --ex <span class="string">&quot;set height 0&quot;</span> --ex <span class="string">&quot;set logging file thread_info.txt&quot;</span> --ex <span class="string">&quot;set logging on&quot;</span> --ex <span class="string">&quot;thread apply all  bt&quot;</span> --ex <span class="string">&quot;set logging off&quot;</span> bin/xcloudd core.xxx</span><br></pre></td></tr></table></figure>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">gdb -q --batch --ex <span class="string">&quot;set pagination off&quot;</span> --ex <span class="string">&quot;set height 0&quot;</span> --ex <span class="string">&quot;set logging file thread_info.txt&quot;</span> --ex <span class="string">&quot;set logging on&quot;</span> --ex <span class="string">&quot;thread apply all bt full&quot;</span> --ex <span class="string">&quot;set logging off&quot;</span> bin/xcloudd core.xxx</span><br></pre></td></tr></table></figure>
 <h2 id="gdb调试core文件">gdb调试core文件</h2>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># 使用stl_view.gdb脚本打印参数，pvector plist 等</span></span><br><span class="line"><span class="built_in">source</span> [stl_view.gdb路径]</span><br><span class="line"></span><br><span class="line"><span class="comment"># 关闭命令行分页功能</span></span><br><span class="line"><span class="built_in">set</span> pagination off</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印所有线程堆栈</span></span><br><span class="line">thread apply all bt</span><br><span class="line"></span><br><span class="line"><span class="comment"># 显示所有线程</span></span><br><span class="line">info threads</span><br><span class="line"></span><br><span class="line"><span class="comment"># 切换到该线程</span></span><br><span class="line">thread tid</span><br><span class="line"></span><br><span class="line"><span class="comment"># 打印（char*）i的字符内容</span></span><br><span class="line">x  /10c &amp;i</span><br></pre></td></tr></table></figure>
 <h2 id="动态参数">动态参数</h2>
@@ -4378,6 +4378,34 @@ C:\Users\CirroData\xcloud\DBConfig.xml</p>
       </categories>
       <tags>
         <tag>集群</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Doris的SQL</title>
+    <url>/2024/02/22/34/</url>
+    <content><![CDATA[<h3 id="查看fe配置项">查看fe配置项</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">ADMIN <span class="keyword">SHOW</span> FRONTEND CONFIG [<span class="keyword">LIKE</span> &quot;pattern&quot;];</span><br></pre></td></tr></table></figure>
+<h3 id="设置fe配置项">设置fe配置项</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">ADMIN <span class="keyword">SET</span> FRONTEND CONFIG (&quot;key&quot; <span class="operator">=</span> &quot;value&quot;);</span><br></pre></td></tr></table></figure>
+<h3 id="查看系统变量">查看系统变量</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> VARIABLES [<span class="keyword">LIKE</span> &quot;pattern&quot;];</span><br></pre></td></tr></table></figure>
+<h3 id="刷新指定-Catalog-Database-Table-的元数据">刷新指定 Catalog/Database/Table 的元数据</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">REFRESH CATALOG catalog_name;</span><br><span class="line">REFRESH DATABASE [catalog_name.]database_name;</span><br><span class="line">REFRESH <span class="keyword">TABLE</span> [catalog_name.][database_name.]table_name;</span><br></pre></td></tr></table></figure>
+<h3 id="创建CirroData-Catalog">创建CirroData Catalog</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">CREATE</span></span><br><span class="line">    CATALOG `cirrodata_dailybuild11` PROPERTIES(</span><br><span class="line">        &quot;type&quot; <span class="operator">=</span> &quot;cirrodata&quot; ,</span><br><span class="line">        &quot;password&quot; <span class="operator">=</span> &quot;*XXX&quot; ,</span><br><span class="line">        &quot;hadoop.username&quot; <span class="operator">=</span> &quot;hdfs&quot; ,</span><br><span class="line">        &quot;fs.defaultFS&quot; <span class="operator">=</span> &quot;hdfs://nameservice1&quot; ,</span><br><span class="line">        &quot;dfs.nameservices&quot; <span class="operator">=</span> &quot;nameservice1&quot; ,</span><br><span class="line">        &quot;dfs.namenode.rpc-address.nameservice1.namenode93&quot; <span class="operator">=</span> &quot;172.16.44.57:8020&quot; ,</span><br><span class="line">        &quot;dfs.namenode.rpc-address.nameservice1.namenode107&quot; <span class="operator">=</span> &quot;172.16.44.58:8020&quot; ,</span><br><span class="line">        &quot;dfs.ha.namenodes.nameservice1&quot; <span class="operator">=</span> &quot;namenode93,namenode107&quot; ,</span><br><span class="line">        &quot;dfs.client.failover.proxy.provider.nameservice1&quot; <span class="operator">=</span> &quot;org.apache.hadoop.hdfs.server.namenode.ha.ConfiguredFailoverProxyProvider&quot; ,</span><br><span class="line">        &quot;create_time&quot; <span class="operator">=</span> &quot;2024-02-19 18:51:57.762&quot; ,</span><br><span class="line">        &quot;cirro.version&quot; <span class="operator">=</span> &quot;2.15&quot; ,</span><br><span class="line">        &quot;cirro.root_name&quot; <span class="operator">=</span> &quot;cirrodata_dailybuild11&quot; ,</span><br><span class="line">        &quot;cirro.database&quot; <span class="operator">=</span> &quot;REG_PARTITION&quot; ,</span><br><span class="line">        &quot;cirro.cluster_name&quot; <span class="operator">=</span> &quot;cirrodata_dailybuild11&quot;</span><br><span class="line">    )</span><br><span class="line">;</span><br></pre></td></tr></table></figure>
+<h3 id="查看指定表的列信息">查看指定表的列信息</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> [<span class="keyword">FULL</span>] COLUMNS <span class="keyword">FROM</span> tbl;</span><br></pre></td></tr></table></figure>
+<h3 id="查看查询计划"><a href="https://doris.apache.org/zh-CN/docs/advanced/best-practice/query-analysis/#%E6%9F%A5%E7%9C%8B%E6%9F%A5%E8%AF%A2%E8%AE%A1%E5%88%92">查看查询计划</a></h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line">EXPLAIN VERBOSE <span class="keyword">select</span> ...</span><br></pre></td></tr></table></figure>
+<h3 id="查看查询-Profile"><a href="https://doris.apache.org/zh-CN/docs/advanced/best-practice/query-analysis/#%E6%9F%A5%E7%9C%8B%E6%9F%A5%E8%AF%A2-profile">查看查询 Profile</a></h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="comment">--</span></span><br><span class="line"><span class="keyword">SET</span> is_report_success<span class="operator">=</span><span class="literal">true</span>;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 执行查询</span></span><br><span class="line"></span><br><span class="line"><span class="comment">-- 获取profile列表，复制query_id，如：c257c52f93e149ee-ace8ac14e8c9fef9</span></span><br><span class="line"><span class="keyword">show</span> query profile &quot;/&quot;;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看整体执行计划树，每个节点都标注了自己所属的 Fragment</span></span><br><span class="line"><span class="keyword">show</span> query profile &quot;/c257c52f93e149ee-ace8ac14e8c9fef9&quot;;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看具体 Fragment 下的 Instance 列表</span></span><br><span class="line"><span class="keyword">show</span> query profile &quot;/c257c52f93e149ee-ace8ac14e8c9fef9/1&quot;;</span><br><span class="line"></span><br><span class="line"><span class="comment">-- 查看具体 Instance</span></span><br><span class="line"><span class="keyword">show</span> query profile &quot;/c257c52f93e149ee-ace8ac14e8c9fef9/1/c257c52f93e149ee-ace8ac14e8c9ff03&quot;;</span><br></pre></td></tr></table></figure>
+<h3 id="查看版本">查看版本</h3>
+<figure class="highlight sql"><table><tr><td class="code"><pre><span class="line"><span class="keyword">SHOW</span> VARIABLES <span class="keyword">LIKE</span> &quot;version_comment&quot;;</span><br></pre></td></tr></table></figure>]]></content>
+      <categories>
+        <category>Doris</category>
+      </categories>
+      <tags>
+        <tag>SQL</tag>
       </tags>
   </entry>
 </search>
