@@ -2461,11 +2461,13 @@
 <h4 id="为每个git仓库配置用户信息">为每个git仓库配置用户信息</h4>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config user.name <span class="string">&quot;Your Name&quot;</span></span><br><span class="line">git config user.email <span class="string">&quot;your@email.com&quot;</span></span><br></pre></td></tr></table></figure>
 <div class="tabs" id="config"><ul class="nav-tabs"><li class="tab active"><a href="#config-1">方法一</a></li><li class="tab"><a href="#config-2">方法二</a></li></ul><div class="tab-content"><div class="tab-pane active" id="config-1"><p>为每个Git仓库配置不同的SSH密钥</p>
-<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config core.sshCommand <span class="string">&quot;ssh -i ~/.ssh/id_rsa_github_personal&quot;</span></span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="config-2"><p>在 ~/.ssh/ 目录下创建或编辑 config 文件,添加以下内容为每个GitHub帐户定义了一个别名,通过别名来选择要使用的SSH密钥文件</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git config core.sshCommand <span class="string">&quot;ssh -i ~/.ssh/id_rsa_github_personal&quot;</span></span><br></pre></td></tr></table></figure>
+<p>若是本地新建的仓库,则需要设置远程仓库的URL</p>
+<figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote set-url origin git@github.com:yourusername/your-repo.git</span><br></pre></td></tr></table></figure></div><div class="tab-pane" id="config-2"><p>在 ~/.ssh/ 目录下创建或编辑 config 文件,添加以下内容为每个GitHub帐户定义了一个别名,通过别名来选择要使用的SSH密钥文件</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line"><span class="comment"># Personal GitHub account</span></span><br><span class="line">Host github.com-personal</span><br><span class="line">  HostName github.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_github_personal</span><br><span class="line"></span><br><span class="line"><span class="comment"># Work GitHub account</span></span><br><span class="line">Host github.com-work</span><br><span class="line">  HostName github.com</span><br><span class="line">  User git</span><br><span class="line">  IdentityFile ~/.ssh/id_rsa_github_work</span><br></pre></td></tr></table></figure>
 <div class="note warning"><h4 id="注意">注意</h4>
 <p>在使用Git时，需要将远程URL更改为之前定义的别名例如: <code>git@github.com:yourusername/your-repo.git</code> 需要修改为 <code>git@github.com-personal:yourusername/your-repo.git</code></p>
-<p>本地git仓库目录下执行命令</p>
+<p>本地git仓库目录下执行命令配置远程仓库的URL</p>
 <figure class="highlight bash"><table><tr><td class="code"><pre><span class="line">git remote set-url origin git@github.com-personal:yourusername/your-repo.git</span><br></pre></td></tr></table></figure>
 </div></div></div></div>
 ]]></content>
@@ -4501,6 +4503,45 @@ C:\Users\CirroData\xcloud\DBConfig.xml</p>
       </categories>
       <tags>
         <tag>集群</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Visual Studio Code Debug Doris FE</title>
+    <url>/2024/06/14/06/</url>
+    <content><![CDATA[<h2 id="必要插件安装">必要插件安装</h2>
+<ol>
+<li>
+<p>Debugger for Java 插件<br>
+<img src="/images/Visual-Studio-Code-Debug-Doris-FE/debugger-for-java.png" alt=""></p>
+</li>
+<li>
+<p>Language Support for Java™ by Red Hat 插件<br>
+<img src="/images/Visual-Studio-Code-Debug-Doris-FE/language-support-for-java.png" alt=""></p>
+</li>
+</ol>
+<h2 id="配置-launch-json-文件">配置 launch.json 文件</h2>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="punctuation">&#123;</span></span><br><span class="line">    <span class="attr">&quot;version&quot;</span><span class="punctuation">:</span> <span class="string">&quot;0.2.0&quot;</span><span class="punctuation">,</span></span><br><span class="line">    <span class="attr">&quot;configurations&quot;</span><span class="punctuation">:</span> <span class="punctuation">[</span></span><br><span class="line">        <span class="punctuation">&#123;</span></span><br><span class="line">            <span class="attr">&quot;type&quot;</span><span class="punctuation">:</span> <span class="string">&quot;java&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;request&quot;</span><span class="punctuation">:</span> <span class="string">&quot;attach&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;name&quot;</span><span class="punctuation">:</span> <span class="string">&quot;Attach (fe)&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;processId&quot;</span><span class="punctuation">:</span> <span class="string">&quot;$&#123;command:PickJavaProcess&#125;&quot;</span><span class="punctuation">,</span></span><br><span class="line">            <span class="attr">&quot;projectName&quot;</span><span class="punctuation">:</span> <span class="string">&quot;fe-core&quot;</span> <span class="comment">// 项目名称, 必须填写, 否则无法调试时不能通过表达式进行求值查看</span></span><br><span class="line">        <span class="punctuation">&#125;</span></span><br><span class="line">    <span class="punctuation">]</span></span><br><span class="line"><span class="punctuation">&#125;</span></span><br></pre></td></tr></table></figure>
+<h2 id="关闭-VSCode-内置表达式求值功能">关闭 VSCode 内置表达式求值功能</h2>
+<p>在 VSCode 的设置中，搜索 <code>debug.inlineValues</code>，将其设置为 <code>off</code> 即可。或直接在 <code>settings.json</code> 文件中添加如下配置项：</p>
+<figure class="highlight json"><table><tr><td class="code"><pre><span class="line"><span class="attr">&quot;debug.inlineValues&quot;</span><span class="punctuation">:</span> <span class="string">&quot;off&quot;</span></span><br></pre></td></tr></table></figure>
+<p>设置为 <code>off</code> 的理由是：内置表达式求值功能会导致调试时变量的值在代码页面上时频繁交替出现，影响调试体验。</p>
+<h2 id="修改Doris-FE-配置文件-fe-conf">修改Doris FE 配置文件 (fe.conf)</h2>
+<p>添加 <code>-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006</code> 到<code>JAVA_OPTS</code>配置项中，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">JAVA_OPTS = &quot;-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=5006 -Djavax.security.auth.useSubjectCredsOnly=false -Xss4m -Xmx8192m -XX:+UnlockExperimentalVMOptions -XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+PrintGCDateStamps -XX:+PrintGCDetails -Xloggc:$DORIS_HOME/log/master.gc.log.$CUR_DATE -Dlog4j2.formatMsgNoLookups=true&quot;</span><br></pre></td></tr></table></figure>
+<h2 id="启动-Doris-FE">启动 Doris FE</h2>
+<p>启动 Doris FE 后，在 VSCode 中点击调试按钮，选择 Attach (fe) 配置项，点击开始调试按钮即可。</p>
+<p><img src="/images/Visual-Studio-Code-Debug-Doris-FE/attach-fe.png" alt=""></p>
+<h2 id="调试">调试</h2>
+<p>调试时，可以设置断点，查看变量，调用堆栈等。</p>
+<p><img src="/images/Visual-Studio-Code-Debug-Doris-FE/debug.png" alt=""></p>
+<p>调试控制台，调试支持自动补全，可以直接输入方法名、类名、变量名，按下 <code>Tab</code> 键即可自动补全。<br>
+<img src="/images/Visual-Studio-Code-Debug-Doris-FE/debug-console.png" alt=""></p>
+]]></content>
+      <categories>
+        <category>Doris</category>
+      </categories>
+      <tags>
+        <tag>Debug</tag>
       </tags>
   </entry>
 </search>
