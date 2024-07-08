@@ -25,7 +25,7 @@
 <meta property="og:site_name" content="风拂榆杨">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2022-08-01T06:24:38.000Z">
-<meta property="article:modified_time" content="2024-01-29T02:28:11.114Z">
+<meta property="article:modified_time" content="2024-07-08T07:07:39.649Z">
 <meta property="article:author" content="fengfuyuyang">
 <meta property="article:tag" content="句柄缓存">
 <meta property="article:tag" content="句柄">
@@ -125,7 +125,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -138,7 +138,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%85%8D%E7%BD%AE%E5%8F%82%E6%95%B0"><span class="nav-number">1.</span> <span class="nav-text">配置参数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%82%E7%94%A8%E8%8C%83%E5%9B%B4"><span class="nav-number">2.</span> <span class="nav-text">适用范围</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -159,7 +158,7 @@
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -241,7 +240,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-01-29 10:28:11" itemprop="dateModified" datetime="2024-01-29T10:28:11+08:00">2024-01-29</time>
+      <time title="修改时间：2024-07-08 15:07:39" itemprop="dateModified" datetime="2024-07-08T15:07:39+08:00">2024-07-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -296,94 +295,22 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h3 id="配置参数">配置参数</h3>
-<div class="tabs" id="handle-cache"><ul class="nav-tabs"><li class="tab active"><a href="#handle-cache-1">3.0</a></li><li class="tab"><a href="#handle-cache-2">3.0之前的版本</a></li></ul><div class="tab-content"><div class="tab-pane active" id="handle-cache-1"><table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>说明</th>
-<th>参数类型</th>
-<th>默认值</th>
-<th>参数值范围</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>file_handle_cache_bucket_num</td>
-<td>文件句柄缓存使用的分桶数量,用于减少并发时的冲突.</td>
-<td>int32</td>
-<td>64</td>
-<td>[4, 256]</td>
-</tr>
-<tr>
-<td>file_handle_cache_enable</td>
-<td>文件句柄缓存开关,设置是否使用文件句柄缓存.</td>
-<td>bool</td>
-<td>true</td>
-<td>true/false</td>
-</tr>
-<tr>
-<td>file_handle_cache_num</td>
-<td>文件句柄缓存最大可缓存的文件句柄的数量.file_handle_cache_enable为true时有效.</td>
-<td>int32</td>
-<td>100000</td>
-<td>[10000, 1000000]</td>
-</tr>
-<tr>
-<td>file_handle_cache_swapout_timeout</td>
-<td>文件句柄缓存中未被使用的句柄最长可保留的时间.</td>
-<td>int64</td>
-<td>21600</td>
-<td>[1h, 1d]</td>
-</tr>
-</tbody>
-</table></div><div class="tab-pane" id="handle-cache-2"><table>
-<thead>
-<tr>
-<th>参数名</th>
-<th>说明</th>
-<th>参数类型</th>
-<th>默认值</th>
-<th>参数值范围</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>num_file_handle_cache_partitions</td>
-<td>文件句柄缓存使用的分区数量（用于将句柄缓存拆成多个分区）.</td>
-<td>uint64</td>
-<td>16</td>
-<td>[1, uint64_max]</td>
-</tr>
-<tr>
-<td>cache_file_handle</td>
-<td>文件句柄缓存开关,设置是否使用文件句柄缓存.</td>
-<td>bool</td>
-<td>true</td>
-<td>true/false</td>
-</tr>
-<tr>
-<td>max_cached_file_handles</td>
-<td>文文件句柄缓存最大可缓存的文件句柄的数量.</td>
-<td>uint64</td>
-<td>20000</td>
-<td>[0, uint64_max]</td>
-</tr>
-<tr>
-<td>unused_file_handle_timeout_sec</td>
-<td>文件句柄缓存中未被使用的句柄最长可保留的时间(秒).</td>
-<td>uint64</td>
-<td>21600</td>
-<td>[0, uint64_max]</td>
-</tr>
-</tbody>
-</table></div></div></div>
-<h3 id="适用范围">适用范围</h3>
-<ol>
-<li>只读文件</li>
-<li>短期内不会修改的文件</li>
-</ol>
-
+    <div class="post-body" itemprop="articleBody"><div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="2e22473ec4fea4f9e414e3c88f64a65e1432bb2acebec24d6ed7cdb0c9f4ea9f">2e543ca1f134acca174816e9898d0b1ca462c78d988439de7b7a3e0b707e7a6844b34666bf5bcf1aa6cc3872399a7e2e5bf48786d7de406647258e5c9f8eb8197cac666d0bc31032b9a590e59e7379f84bb2b8888151c83d2852a9527833bb0ce43716a47854ca1432eb3b6b71a6e5272146d9ba7406302fa5434e80e0ffa3a7e154215c39bbba81a9e34f100a61afcccf948d44b0d10d0123b5db8a8be57c0f81bcc9ba9a7cd841c458c4183892a0cbced5704940098adcdd6223fe96dc5730f96b6a8a1186ca79d8bd6485134e5314043b3efd2d1555048ecbad17ee08f30754364df5f735397f7be7aee0a80f210f8ab68fe6000759fb6c10621e469bef6a6170242a0aac75c8290dc26f2750ff82e8954b46149c203bf83f7c84520b59aea463a03cbd1e656698f1f7217f2145aedb0e5341a28982c48a63e8f2f0e1ba7a11f8d7862f730486fbdfd796318e666115fccdb6b8597ac372f321dae4fa28e0ae8879e9cdc6789bf8f8842bb3c42744bb7d49f45d4be0c9edebad74783b7af6e88c1aa802de4e37fd05adf463011b27589c03768cb1109e1a85b2c9604f33b48356a5847ca2566fcd6d4a327fb24da3ed19bce9a7820deec26a447817986fda03ff74e195ea13a3936f00f0081f17c812d259e33a8d55c4041dfc87067af7bd67b342e5402ba8fa0d53350d7acea309b79816d46d449f0e85376e58dd0c4a23a9fba9268f5811b4346328b742dc563e2c9a5bf38b0d3df8cbfd9b89f2e7accd69c0da8625d17218e78ff669e65ea8742449bbd78d1d52ef3c1fb42905447354fa1a1e73e59b3ecbb81e41020b2bb1ea1964cd9ded4ed484d94a42278e233310d4a55fb30828884501d9213e98308ec2768f3bbb7b51531d4506b18f5f93a91dae8c210735d516725d42bac7450bd75c4d2619504059dabc7fb9241b931b12e2faed1e477772a996db9f0d6328ac9fa85fa53fed8cd88518078aa24f06171101f321aaa38aa8fbe52bcf210539dee162361a652f6a86855d93e97da6775ed785f136c936763ebf1cd0863116c83c71c5a8d3c6624b94628b1435b6dd7719a06f92d29aeed6550853c07d25a9f924102a5796bc7e1eb5a0594e3df92317815d33ccc6a98eb03a97b7fcf9066827077cdc4a63c53f914d79c41b4a610c8b11c3d91796333680b3d3705ee29dd9e87c575b84a5ad23e9cc63340902998a49dc5cb8ac601076f5dc5cc7b59107b9913a6c7bd1bf8fcd2b4e65cd3c32fd0917162ea5ec589ffb4845469e69f94e18694b793ea4dce5cb0aa0637e2aee29c3b79e16b7846734cc5d5b65f1c3040dcd900046bbe44dabb51b6a89b9251172f3d8bef6857c24b6bb13cde1164232070b053051299b2577652a60d363df62c098c2968bad51511ad36fcdf2619457792559071c13bb97add3d0d593bd4f0ee981dc57086a2ab14485bc2fc9702fce3fe3bc9f411f6e1b01525947c538e2ef3050df47a87295b43f0a2298add8c7b38b9125f9ca510f2d6c61c8f2cb8e0cf56301c2b7caf84e9fe0481cd7ece6536612349027392b2e8afcfe4e97f5f00b455df473a51aff494235d1dfe02fff5d735cc8472bc90f3aa84b0c0763cb4c78e3f4ee1ac0ee3263e0940c67176313eefb17234d1254b5e03d4a10f5e0cf09f32b0b71cc639c89cab84a54666aad688f7ad613aeb5d7d3811776f41e06635180183cafe2b5dd41b0189ef4343f6df1b3e185f877f0383215cca0b631f19591828a28dc0c06d883e50562dc25489a178fd2040bada9736e1ffef85355bfa08eead34ffed4509b8f2890fc12528804fc83af35c1dab9c3e082c11dccc97625f8d9d7f8c5651898d6b0c2e2c2793d0e77c1b619b7a90a4686c2e24ef49ab8113188de754cf9f24ef58694138538fffdc13f02539aef133863ce131db0355c0ed3c773e3040eb7939b83bc43745984d953d72744b553fc0c879d500c4745d14eb28c2d90e7dc54eccb54eba10ddec3fbda33a6eae8d3c86bc3930be706c1a27b5ed0bb0b4aba70cb14b63264d6258cdc184a2cc80798bde979c91b4e83fc4d50e3262fb1c3898c16003e083cee1addf45b14974d0584ae4da4674cb6ebcc695ed8a0b11ad0a745948529039ea3e99e1ee02036aa5a52c98ab2c16dd9b1ad78e8ae25eac2d0bea136f159d875854430cf4d0a17fce6ee4e9fd40fa0ad3b2d2c5d1d42f930ffd3fb77402f76e8f5cb97e8a39447b2c083639dacec4576e39e04d9e57c2990c96812805f2b01b9fc5a2ec5292e5d720e06d3b7393aeb6ca2130a9ec03fd74f73b2b3fdf00b792cb47727cd2ebceccff61af5929c5dab731520cd7ac3121c35d9c86983f1dc5e049f4963be350163c732fdf5394f0344c7ce9b2925452ec105939203c5937c4bbeaa5a8c1b8a662aa2d598fc854963af707d17febfbb222249b6ff15aa9a0c6484c544065113a05806d08e005c4e9463a201db69d25ea1b24cc1f7778fea9693c48ed3230a2ee9c49ebbb63bd689ca716cda3ae90d72e7b0c7f537a960e85d426b4340393112e771c732f5e2daf9f3136f69a4e86e0ecc88f46ba7bf9bec859ac552a0c656a59b6bb4a031bc220fafbd0fc02a8e69398b93225cd077cbd3bdc122415ed44ec08564cf822e70957ee4ed8a397e6d04388942e00519b9e2dcdf45eb919afb42aa6ce9dafe9f5b2059cb5db9a57eed79cc03e0f322b2d9f540d458aeff1fe1630ce8d249fb468330e0ce80b2bb847cf9382963cf8dac9184c835a7bfabf61f79a880e3d379f98443a2b0bb0629aefa3f117f7bfe1a62f64b6314f34d36550d5806967821352875708cea4485e9c4c09d03b41291399f3c8f7e743eb4576f93b5b7353b8c570b89d9216648d114dfb91a53bbc0655ddcb1c1c4132639b7d1a8e2a21d8476d6eb22a30f79b088a6312c81683d1cd0b72fdbb1f3f9c539a558f6bb188aa9ce9a903d2afdac5c4d7939a33cf8efdedd93636fb8f53f5497987c79de85354fe0234a7ff8c6658bdd53fb34ba8648e8e8074f7f09d75434a5c22774e69231e55a67ccb7716288c62741efc14d1e1cfabebc2ea09cbe55f160db637cf6e50c88e517d527588ed31bf033102632d8d4c013e4cea02193f90b820b92971b0defd9309a42d0776e4236a049f730086de7562e5d04e546a471a4a8ccf01b8b85499cf47189a47442916d53cdca564e4c29e37a2c82becbf2586c3cbc4e3e29bd891da6fbc655da44</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-xray">
+      <input class="hbe hbe-input-field hbe-input-field-xray" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-xray" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-xray">您好, 这里需要密码.</span>
+      </label>
+      <svg class="hbe hbe-graphic hbe-graphic-xray" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+        <path d="M0,2.5c0,0,298.666,0,399.333,0C448.336,2.5,513.994,13,597,13c77.327,0,135-10.5,200.999-10.5c95.996,0,402.001,0,402.001,0"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
     </div>
 
     

@@ -27,7 +27,7 @@
 <meta property="og:description" content="详细说明远程读数据缓存功能设计">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2023-12-07T01:49:12.000Z">
-<meta property="article:modified_time" content="2024-01-29T02:28:11.114Z">
+<meta property="article:modified_time" content="2024-07-08T07:08:14.046Z">
 <meta property="article:author" content="fengfuyuyang">
 <meta property="article:tag" content="数据缓存">
 <meta name="twitter:card" content="summary">
@@ -126,7 +126,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -139,7 +139,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E7%BB%93%E6%9E%84"><span class="nav-number">2.</span> <span class="nav-text">缓存结构</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%83%E6%95%B0%E6%8D%AE%E7%BC%93%E5%AD%98-LRU%E7%BC%93%E5%AD%98"><span class="nav-number">2.1.</span> <span class="nav-text">元数据缓存(LRU缓存)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E7%BC%93%E5%AD%98"><span class="nav-number">2.2.</span> <span class="nav-text">数据缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%B7%98%E6%B1%B0%E6%9C%BA%E5%88%B6"><span class="nav-number">3.</span> <span class="nav-text">淘汰机制</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -160,7 +159,7 @@
       </div>
       <div class="site-state-item site-state-categories">
           <a href="/categories/">
-        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-count">14</span>
         <span class="site-state-item-name">分类</span></a>
       </div>
       <div class="site-state-item site-state-tags">
@@ -242,7 +241,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-01-29 10:28:11" itemprop="dateModified" datetime="2024-01-29T10:28:11+08:00">2024-01-29</time>
+      <time title="修改时间：2024-07-08 15:08:14" itemprop="dateModified" datetime="2024-07-08T15:08:14+08:00">2024-07-08</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -293,28 +292,22 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="概述">概述</h2>
-<p>计算节点通过缓存远端数据，实现了对数据的快速访问和网络开销的减少。当需要读取相同的数据时，计算节点可以直接从缓存中获取，而无需通过网络进行数据传输。这种方式不仅提高了数据访问的速度，也大大减少了网络的负载。这种策略在处理大量数据时，尤其能体现出其优势，有效提升了整体的运行效率。</p>
-<h2 id="缓存结构">缓存结构</h2>
-<h3 id="元数据缓存-LRU缓存">元数据缓存(LRU缓存)</h3>
-<p>缓存所有CacheKey与CacheEntry的键值对，使用LRU缓存，用于查找数据，淘汰旧数据以及控制数据缓存占用磁盘的大小作用；</p>
-<ul>
-<li>CacheKey：记录远程文件的文件名filename，文件最后一次被修改的时间戳mtime，目标数据所在的起始偏移量offset</li>
-<li>CacheEntry：记录缓存数据所在的缓存文件的文件句柄，缓存数据所在的起始偏移量offset，缓存数据的长度length</li>
-</ul>
-<h3 id="数据缓存">数据缓存</h3>
-<p>存储从远端读取到的数据到本地磁盘中，当数据被存储时，无论数据实际占用多少空间，都会以4KB的倍数进行分配和存储。即以页（page）为单位进行管理, 有助于提高系统性能和文件打孔。</p>
-<p>缺点：如果数据大小不是4KB的整数倍，会将整个4KB的页分配给数据，导致浪费一些空间。</p>
-<ul>
-<li>存储目录：一个或多个，用于存储缓存文件，每个存储目录设置存储上限；多存储目录情况下在存储数据时，通过hash计算选择存储目录</li>
-<li>缓存文件：存储具体的数据段，单文件最大可达到存储目录设置的存储上限，服务过程中保持open状态，属于临时文件，便于在服务停止或机器宕机后自动清理文件，避免产生垃圾文件</li>
-</ul>
-<h2 id="淘汰机制">淘汰机制</h2>
-<ol>
-<li>使用LRU策略淘汰旧数据，在删除CacheEntry的同时，通过文件打孔的方式，删除缓存文件中的旧数据</li>
-<li>限制总缓存文件数，避免因不断淘汰而产生大量小文件</li>
-</ol>
-
+    <div class="post-body" itemprop="articleBody"><div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="85b1a1151814ddfe78bbe5af9432de11af0c4fb17df69763081bd90d56f7ebd8">2e543ca1f134acca174816e9898d0b1cec9478624eea4cc580894daad791b635e6434ae3b098998ea50bab58af05f639fecc02c900d6502917dca12c429c7f153331b07194044566da6d4334b766aaf0ca1c3bacd9213ee490ad320e5bcff2352d897b70a95b8cfa1c6b6a580c72b0c7cde4e18078adc4017b3be89f2ea21df0e4ad65956debf7c27782ef6d266517c11703a6be4d157a91e5389fdd93170e241c3f2e40a372237675c6890c394f484198d3cacc19986a9ce2bc74598cee070f120e0f0a7ca1c162e8828f689421fb32344669c339c11753df66beb90573656b740293ade56d082ee252b9f01111e2c402c90d74433d9d05e6e8a3e4649aa6d8071e4d4932032252048bc0ec624ce86757b634c1fd80db3896f8c8f5f06711493d665e70a2a3f2fb42f73c4678705508a11cd9c994832f66486da121151fb89f23d7922f5e27ea1a0027c39bdbd197f9c54ed2e92dc5e77083025a4e74358de28c379f541e385410b4cd745b45ee2a6ef57f9b937f7f4a0b1bc8420d3fdc7a60fa5b95fabe3c49e3bd4721e9669d11ce20971e415cadc81c6a06ae7975fd13826b680ea87dde0aee75dbf7aa36617c76a38879f61cf4bb78479d080967a28fe9222266a3ff188397131c3da7200eb109b8e559df3f51f2cdcedf4c712b56195d1926e333c4762ea30f30937b98fe5a5e13ace6ed2e0cf120e26fa281a1cd096bc6cccdaf2cb97ecca4a420ab5b1b677897dff7ff8bdd17e706383dbc54e2375393d5ce720158de9b5a8888f963a14dad83abab579ed4c77953d5e73829c950bbbd63b5e0dbab3c025a6a272fa9c7df8ff0b38cb264abec35c89a7583b68206a2fa1db1b4efb9e7ef428a6972ce16440bdf551ee7233676e5ff5d6e32aa165415ff2743d778b6aca67f7ff03a910217ce17156125a80c4ff645ead0c9cd31d9590239bbeddcb88d71f9ba979f8cf4e179d726dc706c956e9c1157579213f9544cc7d5301a0ca480afa5c08d7fa2bf6fd5f25f90681c869ce3d1f2ee6d7c48d9432665362e527f6f969c29b5544645a37e641a53f6685d19fd2f1d2c1e7d20d0861c61881e70cbc391c606f5ce856ae9e425c60ea9f782e04729571864e025a7a0da506e7c7db9257cebedafa7639f536a8899bcf99f80d9f0883bb2df25b42e2a62afdd44ac89ecc2fb3227a62a23fb642f1ec664c37431fe1c93d16d26a3fc527483135ee463ad73269ec930915a6a33e2ff36720499a20013e5e11b4368cd56ff9726a92a6cc8847b9f1030666719c21cbedef2b5aa0f27d5544c34c8f4151a597614bdedf720e80f7a25f64c2cb622d67bf599ef15090cd4f11a735a2c7ce6c8b94ce568de0076b53ec4bd29a83cfab49f2d7b94be5cab919ca832a3401fe38bfdff1358b157133b971bc7bee5daecdb33e7bf60a10627e7e7fe3839ba9ea338a446d95599860fc742e1107aeb8a62724cbe31afd74bd64f14e4294b09b513341eaf7334eecb03867f550df5367f796b1a69938da104c35970001edc172f9c848f5dbeb4f1a1382c6ed86be6e3d7b6b0b32b5364a02e43071b4d332a9f687e10bafe97834a13a25e6dff1dd9abe899c32c1aa2f7e57ead0a50467bdf457d36673ff554a632c79efd3f6daceab2f3e590ac9b315faebc7be2a24ef46877b2c3c1b705f9d6f3b70ae06f95c538dfa8a44c566760cdc7687e2b4d187cfdc3a098fe3c3811bd751c1915bb47d8d12db335477cf13d8008f70772df17f92ec6c30241c89cdab1f32c007a2a000c08cfa91eed5a72750b816c7ae549787732798ba1e25506abcd077fb68abaa33935b5779a58b53991ad8c11a045b958294a80971f1d7b9ca129afd60757d2fd523bfad4646e7d5a3a50c420069b2d64c863f23b9a4fb3f74e684b33f6e86859a6711dc7cf7e4d977f4fb7c5eebbccef4d665ccc39ce047e1ddc263e3dd3e16613972425ad2b94cd935fdd02732b6aeab3cd84babae9ad7155a21f71a2086653c53e021516467a81b9e780047718d319ba93b4117b4ca6a638dae5f359e57392a40ecaa30a5be555ee24140128157ea888b0794c3a7d6de9b93c32592f983939906e8fbd9be1f7f433270d114c0c8120c0878d6585ca34e11deaefd82ac920c3ff3b30c2ba77d7f742edc8e23e354dc0945468cec829a935cc55a26096744e6f4e447fe5670ab08b0919900728727f2a174322813564d7d01b1942908a85c8efa30678de21082fe7fc7e2a5736b8d6141feadc8577a6573352c18e476fcd08817283fe51497b5b10cfe435d0896e238431d6f46ec79aae93716c49173786369fc8c506675ad829111fe70735d751b2e3a578ec715f6ce9f37f70eec7b8876fbebea1c900fd26e39f8f7121075702c5beff8f4b173cef005c7b55f1a8b2074b6e6979e3c054c1c6ce1a3c9e81d54be8fe0643bb3fb02c7baccc52529f6bdbfe91ba003e3cdbe3f764da2d35cf578dbdeedfdba896b67e2b287d0917ad1b65e177f552cfe6f24ca4506fa9827725a4403ba1116ad9d5db736a317ed36426f65c24c1037b4bc9f502cb6f49a3841d92c1d3063ecb47ce844c88c081f25316215cbc10b80789d87cab8dd9e3111bd397977f43d5769d8ed949254ae20e50a736700460819c023b9bd2c7c5bf1973029491dcd0ef20f74a7555cf7fb01e1ab3df06c8037e65248676ef4d56da9abd16b92b80a4ec6afe83a96f823021eedb5a826a97323dfebe39ff4c0b802924f1c183f57a86eba8f79e86eccd56aef06c17382708c36881da950928c7ee99c7ffb0b44631b43d3d10542537d35c76480a7851ab3bac9c30703b1460871e8fff9d3a3a80acfd5cc7ce015c9b66d0df1868b7615985cc105a6dd168f9edb4b7d0a67fd3b4ed47d060cbda539157e1ba6295e265e6853597f54111b446504565e1d8ef5c3ddf5272056053a1facb8c4d671d8af77a84304f93762cf4de5bcfea4c4a0bd8f453f04fa6318f1dd500c762f026cb94eb55dcc3706dbece05cd6254b626d94545b2a72839280ee58bc0d896cfb359d22ab605a3e2f9234dbb96b069d33e7b786630e2d79cf59205bef10e8282c2a8e50a651f539ee772a339144b1b30478c2cd4b859fcfa9ae4</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-xray">
+      <input class="hbe hbe-input-field hbe-input-field-xray" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-xray" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-xray">您好, 这里需要密码.</span>
+      </label>
+      <svg class="hbe hbe-graphic hbe-graphic-xray" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+        <path d="M0,2.5c0,0,298.666,0,399.333,0C448.336,2.5,513.994,13,597,13c77.327,0,135-10.5,200.999-10.5c95.996,0,402.001,0,402.001,0"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
     </div>
 
     
