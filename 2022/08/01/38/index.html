@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 6.3.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" integrity="sha256-XOqroi11tY4EFQMR9ZYwZWKj5ZXiftSx36RRuC3anlA=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"fengfuyuyang.pages.dev","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.20.0","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":"mac"},"fold":{"enable":false,"height":500},"bookmark":{"enable":true,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta property="og:type" content="article">
+<meta property="og:title" content="句柄缓存">
+<meta property="og:url" content="https://fengfuyuyang.pages.dev/2022/08/01/38/index.html">
+<meta property="og:site_name" content="风拂榆杨">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2022-08-01T06:24:38.000Z">
+<meta property="article:modified_time" content="2024-10-18T03:59:54.292Z">
+<meta property="article:author" content="fengfuyuyang">
+<meta property="article:tag" content="句柄缓存">
+<meta property="article:tag" content="句柄">
+<meta name="twitter:card" content="summary">
+
+
+<link rel="canonical" href="https://fengfuyuyang.pages.dev/2022/08/01/38/">
+
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://fengfuyuyang.pages.dev/2022/08/01/38/","path":"2022/08/01/38/","title":"句柄缓存"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>句柄缓存 | 风拂榆杨</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">风拂榆杨</p>
+      <i class="logo-line"></i>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-overview-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="fengfuyuyang"
+      src="/images/Chinchilla.jpg">
+  <p class="site-author-name" itemprop="name">fengfuyuyang</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">36</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">15</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">45</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+  <div class="links-of-author animated">
+      <span class="links-of-author-item">
+        <a href="https://github.com/fengfuyuyang" title="GitHub → https:&#x2F;&#x2F;github.com&#x2F;fengfuyuyang" rel="noopener me" target="_blank"><i class="fab fa-github fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="mailto:fengfuyuyang@outlook.com" title="E-Mail → mailto:fengfuyuyang@outlook.com" rel="noopener me" target="_blank"><i class="fa fa-envelope fa-fw"></i></a>
+      </span>
+      <span class="links-of-author-item">
+        <a href="/images/weixin.jpg" title="WeChat → &#x2F;images&#x2F;weixin.jpg" rel="noopener me"><i class="fab fa-weixin fa-fw"></i></a>
+      </span>
+  </div>
+  <div class="cc-license animated" itemprop="license">
+    <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" class="cc-opacity" rel="noopener" target="_blank"><img src="https://cdnjs.cloudflare.com/ajax/libs/creativecommons-vocabulary/2020.11.3/assets/license_badges/small/by_nc_sa.svg" alt="Creative Commons"></a>
+  </div>
+
+        </div>
+      </div>
+        <div class="back-to-top animated" role="button" aria-label="返回顶部">
+          <i class="fa fa-arrow-up"></i>
+          <span>0%</span>
+        </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://fengfuyuyang.pages.dev/2022/08/01/38/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/Chinchilla.jpg">
+      <meta itemprop="name" content="fengfuyuyang">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="风拂榆杨">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="句柄缓存 | 风拂榆杨">
+      <meta itemprop="description" content="CirroData 句柄缓存功能，通过缓存hdfs文件句柄,减少重复`open`和`close`,提高读取性能">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          句柄缓存
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2022-08-01 14:24:38" itemprop="dateCreated datePublished" datetime="2022-08-01T14:24:38+08:00">2022-08-01</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-10-18 11:59:54" itemprop="dateModified" datetime="2024-10-18T11:59:54+08:00">2024-10-18</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/CirroData/" itemprop="url" rel="index"><span itemprop="name">CirroData</span></a>
+        </span>
+          ，
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/CirroData/%E7%BC%93%E5%AD%98/" itemprop="url" rel="index"><span itemprop="name">缓存</span></a>
+        </span>
+    </span>
+
+  
+  
+  <span class="post-meta-item">
+    
+    <span class="post-meta-item-icon">
+      <i class="far fa-comment"></i>
+    </span>
+    <span class="post-meta-item-text">Valine：</span>
+  
+    <a title="valine" href="/2022/08/01/38/#valine-comments" itemprop="discussionUrl">
+      <span class="post-comments-count valine-comment-count" data-xid="/2022/08/01/38/" itemprop="commentCount"></span>
+    </a>
+  </span>
+  
+  
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>293</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+            <div class="post-description">CirroData 句柄缓存功能，通过缓存hdfs文件句柄,减少重复`open`和`close`,提高读取性能</div>
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><div class="hbe hbe-container" id="hexo-blog-encrypt" data-wpm="抱歉, 这个密码看着不太对, 请再试试." data-whm="抱歉, 这个文章不能被校验, 不过您还是能看看解密后的内容.">
+  <script id="hbeData" type="hbeData" data-hmacdigest="2e22473ec4fea4f9e414e3c88f64a65e1432bb2acebec24d6ed7cdb0c9f4ea9f">2e543ca1f134acca174816e9898d0b1ca462c78d988439de7b7a3e0b707e7a6844b34666bf5bcf1aa6cc3872399a7e2e5bf48786d7de406647258e5c9f8eb8197cac666d0bc31032b9a590e59e7379f84bb2b8888151c83d2852a9527833bb0ce43716a47854ca1432eb3b6b71a6e5272146d9ba7406302fa5434e80e0ffa3a7e154215c39bbba81a9e34f100a61afcccf948d44b0d10d0123b5db8a8be57c0f81bcc9ba9a7cd841c458c4183892a0cbced5704940098adcdd6223fe96dc5730f96b6a8a1186ca79d8bd6485134e5314043b3efd2d1555048ecbad17ee08f30754364df5f735397f7be7aee0a80f210f8ab68fe6000759fb6c10621e469bef6a6170242a0aac75c8290dc26f2750ff82e8954b46149c203bf83f7c84520b59aea463a03cbd1e656698f1f7217f2145aedb0e5341a28982c48a63e8f2f0e1ba7a11f8d7862f730486fbdfd796318e666115fccdb6b8597ac372f321dae4fa28e0ae8879e9cdc6789bf8f8842bb3c42744bb7d49f45d4be0c9edebad74783b7af6e88c1aa802de4e37fd05adf463011b27589c03768cb1109e1a85b2c9604f33b48356a5847ca2566fcd6d4a327fb24da3ed19bce9a7820deec26a447817986fda03ff74e195ea13a3936f00f0081f17c812d259e33a8d55c4041dfc87067af7bd67b342e5402ba8fa0d53350d7acea309b79816d46d449f0e85376e58dd0c4a23a9fba9268f5811b4346328b742dc563e2c9a5bf38b0d3df8cbfd9b89f2e7accd69c0da8625d17218e78ff669e65ea8742449bbd78d1d52ef3c1fb42905447354fa1a1e73e59b3ecbb81e41020b2bb1ea1964cd9ded4ed484d94a42278e233310d4a55fb30828884501d9213e98308ec2768f3bbb7b51531d4506b18f5f93a91dae8c210735d516725d42bac7450bd75c4d2619504059dabc7fb9241b931b12e2faed1e477772a996db9f0d6328ac9fa85fa53fed8cd88518078aa24f06171101f321aaa38aa8fbe52bcf210539dee162361a652f6a86855d93e97da6775ed785f136c936763ebf1cd0863116c83c71c5a8d3c6624b94628b1435b6dd7719a06f92d29aeed6550853c07d25a9f924102a5796bc7e1eb5a0594e3df92317815d33ccc6a98eb03a97b7fcf9066827077cdc4a63c53f914d79c41b4a610c8b11c3d91796333680b3d3705ee29dd9e87c575b84a5ad23e9cc63340902998a49dc5cb8ac601076f5dc5cc7b59107b9913a6c7bd1bf8fcd2b4e65cd3c32fd0917162ea5ec589ffb4845469e69f94e18694b793ea4dce5cb0aa0637e2aee29c3b79e16b7846734cc5d5b65f1c3040dcd900046bbe44dabb51b6a89b9251172f3d8bef6857c24b6bb13cde1164232070b053051299b2577652a60d363df62c098c2968bad51511ad36fcdf2619457792559071c13bb97add3d0d593bd4f0ee981dc57086a2ab14485bc2fc9702fce3fe3bc9f411f6e1b01525947c538e2ef3050df47a87295b43f0a2298add8c7b38b9125f9ca510f2d6c61c8f2cb8e0cf56301c2b7caf84e9fe0481cd7ece6536612349027392b2e8afcfe4e97f5f00b455df473a51aff494235d1dfe02fff5d735cc8472bc90f3aa84b0c0763cb4c78e3f4ee1ac0ee3263e0940c67176313eefb17234d1254b5e03d4a10f5e0cf09f32b0b71cc639c89cab84a54666aad688f7ad613aeb5d7d3811776f41e06635180183cafe2b5dd41b0189ef4343f6df1b3e185f877f0383215cca0b631f19591828a28dc0c06d883e50562dc25489a178fd2040bada9736e1ffef85355bfa08eead34ffed4509b8f2890fc12528804fc83af35c1dab9c3e082c11dccc97625f8d9d7f8c5651898d6b0c2e2c2793d0e77c1b619b7a90a4686c2e24ef49ab8113188de754cf9f24ef58694138538fffdc13f02539aef133863ce131db0355c0ed3c773e3040eb7939b83bc43745984d953d72744b553fc0c879d500c4745d14eb28c2d90e7dc54eccb54eba10ddec3fbda33a6eae8d3c86bc3930be706c1a27b5ed0bb0b4aba70cb14b63264d6258cdc184a2cc80798bde979c91b4e83fc4d50e3262fb1c3898c16003e083cee1addf45b14974d0584ae4da4674cb6ebcc695ed8a0b11ad0a745948529039ea3e99e1ee02036aa5a52c98ab2c16dd9b1ad78e8ae25eac2d0bea136f159d875854430cf4d0a17fce6ee4e9fd40fa0ad3b2d2c5d1d42f930ffd3fb77402f76e8f5cb97e8a39447b2c083639dacec4576e39e04d9e57c2990c96812805f2b01b9fc5a2ec5292e5d720e06d3b7393aeb6ca2130a9ec03fd74f73b2b3fdf00b792cb47727cd2ebceccff61af5929c5dab731520cd7ac3121c35d9c86983f1dc5e049f4963be350163c732fdf5394f0344c7ce9b2925452ec105939203c5937c4bbeaa5a8c1b8a662aa2d598fc854963af707d17febfbb222249b6ff15aa9a0c6484c544065113a05806d08e005c4e9463a201db69d25ea1b24cc1f7778fea9693c48ed3230a2ee9c49ebbb63bd689ca716cda3ae90d72e7b0c7f537a960e85d426b4340393112e771c732f5e2daf9f3136f69a4e86e0ecc88f46ba7bf9bec859ac552a0c656a59b6bb4a031bc220fafbd0fc02a8e69398b93225cd077cbd3bdc122415ed44ec08564cf822e70957ee4ed8a397e6d04388942e00519b9e2dcdf45eb919afb42aa6ce9dafe9f5b2059cb5db9a57eed79cc03e0f322b2d9f540d458aeff1fe1630ce8d249fb468330e0ce80b2bb847cf9382963cf8dac9184c835a7bfabf61f79a880e3d379f98443a2b0bb0629aefa3f117f7bfe1a62f64b6314f34d36550d5806967821352875708cea4485e9c4c09d03b41291399f3c8f7e743eb4576f93b5b7353b8c570b89d9216648d114dfb91a53bbc0655ddcb1c1c4132639b7d1a8e2a21d8476d6eb22a30f79b088a6312c81683d1cd0b72fdbb1f3f9c539a558f6bb188aa9ce9a903d2afdac5c4d7939a33cf8efdedd93636fb8f53f5497987c79de85354fe0234a7ff8c6658bdd53fb34ba8648e8e8074f7f09d75434a5c22774e69231e55a67ccb7716288c62741efc14d1e1cfabebc2ea09cbe55f160db637cf6e50c88e517d527588ed31bf033102632d8d4c013e4cea02193f90b820b92971b0defd9309a42d0776e4236a049f730086de7562e5d04e546a471a4a8ccf01b8b85499cf47189a47442916d53cdca564e4c29e37a2c82becbf2586c3cbc4e3e29bd891da6fbc655da44</script>
+  <div class="hbe hbe-content">
+    <div class="hbe hbe-input hbe-input-xray">
+      <input class="hbe hbe-input-field hbe-input-field-xray" type="password" id="hbePass">
+      <label class="hbe hbe-input-label hbe-input-label-xray" for="hbePass">
+        <span class="hbe hbe-input-label-content hbe-input-label-content-xray">您好, 这里需要密码.</span>
+      </label>
+      <svg class="hbe hbe-graphic hbe-graphic-xray" width="300%" height="100%" viewBox="0 0 1200 60" preserveAspectRatio="none">
+        <path d="M0,56.5c0,0,298.666,0,399.333,0C448.336,56.5,513.994,46,597,46c77.327,0,135,10.5,200.999,10.5c95.996,0,402.001,0,402.001,0"></path>
+        <path d="M0,2.5c0,0,298.666,0,399.333,0C448.336,2.5,513.994,13,597,13c77.327,0,135-10.5,200.999-10.5c95.996,0,402.001,0,402.001,0"></path>
+      </svg>
+    </div>
+  </div>
+</div>
+<script data-pjax src="/lib/hbe.js"></script><link href="/css/hbe.style.css" rel="stylesheet" type="text/css">
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>fengfuyuyang
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://fengfuyuyang.pages.dev/2022/08/01/38/" title="句柄缓存">https://fengfuyuyang.pages.dev/2022/08/01/38/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/%E5%8F%A5%E6%9F%84%E7%BC%93%E5%AD%98/" rel="tag"><i class="fa fa-tag"></i> 句柄缓存</a>
+              <a href="/tags/%E5%8F%A5%E6%9F%84/" rel="tag"><i class="fa fa-tag"></i> 句柄</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2022/07/19/52/" rel="prev" title="本地数据缓存">
+                  <i class="fa fa-angle-left"></i> 本地数据缓存
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2022/08/16/22/" rel="next" title="git命令">
+                  git命令 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments" id="valine-comments"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2025</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">fengfuyuyang</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">29k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">1:44</span>
+  </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="reading-progress-bar"></div>
+  <a role="button" class="book-mark-link book-mark-link-fixed"></a>
+
+  <a href="https://github.com/fengfuyuyang" class="github-corner" title="在 GitHub 上关注我" aria-label="在 GitHub 上关注我" rel="noopener" target="_blank"><svg width="80" height="80" viewBox="0 0 250 250" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/bookmark.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+  <script class="next-config" data-name="mermaid" type="application/json">{"enable":true,"theme":{"light":"default","dark":"dark"},"js":{"url":"https://cdnjs.cloudflare.com/ajax/libs/mermaid/10.9.0/mermaid.min.js","integrity":"sha256-stuqcu2FrjYCXDOytWFA5SoUE/r3nkp6gTglzNSlavU="}}</script>
+  <script src="/js/third-party/tags/mermaid.js"></script>
+
+
+
+
+
+  
+
+
+
+
+
+
+<script class="next-config" data-name="valine" type="application/json">{"enable":true,"appId":"w8UzA7fH5OqqFiaqZyoxnyzi-gzGzoHsz","appKey":"wuBoElQDkSe9DMhfFOgUHqoz","serverURLs":"https://w8uza7fh.lc-cn-n1-shared.com","placeholder":"Just go go","avatar":"mm","meta":["nick","mail"],"pageSize":10,"lang":null,"visitor":false,"comment_count":true,"recordIP":false,"enableQQ":"enable","requiredFields":["nick","mail"],"el":"#valine-comments","path":"/2022/08/01/38/"}</script>
+<script>
+document.addEventListener('page:loaded', () => {
+  NexT.utils.loadComments(CONFIG.valine.el)
+    .then(() => NexT.utils.getScript(
+      'https://fastly.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js',
+      { condition: window.Valine }
+    ))
+    .then(() => {
+      new Valine(CONFIG.valine);
+    });
+});
+</script>
+
+</body>
+</html>
